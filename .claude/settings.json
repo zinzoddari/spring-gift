@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{}' | jq -r 'empty' 2>/dev/null; jq -r 'if (.tool_input.command | test(\"git commit\")) then {\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"git commit이 실행되었습니다. docs/ARCHITECTURE.md가 최신 상태인지 확인해주세요. 구조적 변경(새 클래스, 패키지, 엔드포인트, 관계 변경)이 있었다면 해당 섹션을 업데이트해주세요.\"}} | tojson else empty end' 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
