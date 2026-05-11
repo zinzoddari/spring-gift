@@ -1,5 +1,7 @@
-package gift.member;
+package gift.member.view;
 
+import gift.member.Member;
+import gift.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

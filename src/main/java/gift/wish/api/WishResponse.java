@@ -1,4 +1,6 @@
-package gift.wish;
+package gift.wish.api;
+
+import gift.wish.Wish;
 
 public record WishResponse(
     Long id,

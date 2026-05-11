@@ -1,4 +1,6 @@
-package gift.category;
+package gift.category.api;
+
+import gift.category.Category;
 
 public record CategoryResponse(
     Long id,

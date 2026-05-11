@@ -1,7 +1,10 @@
-package gift.product;
+package gift.product.view;
 
 import gift.category.Category;
 import gift.category.CategoryRepository;
+import gift.product.Product;
+import gift.product.ProductNameValidator;
+import gift.product.ProductRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

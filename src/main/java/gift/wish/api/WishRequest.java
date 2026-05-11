@@ -1,4 +1,4 @@
-package gift.wish;
+package gift.wish.api;
 
 import jakarta.validation.constraints.NotNull;
 

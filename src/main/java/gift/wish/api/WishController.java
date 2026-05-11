@@ -1,6 +1,8 @@
-package gift.wish;
+package gift.wish.api;
 
 import gift.auth.AuthenticationResolver;
+import gift.wish.Wish;
+import gift.wish.WishRepository;
 import gift.product.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

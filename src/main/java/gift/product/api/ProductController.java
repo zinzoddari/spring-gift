@@ -1,7 +1,10 @@
-package gift.product;
+package gift.product.api;
 
 import gift.category.Category;
 import gift.category.CategoryRepository;
+import gift.product.Product;
+import gift.product.ProductNameValidator;
+import gift.product.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,7 @@
-package gift.product;
+package gift.product.api;
 
 import gift.category.Category;
+import gift.product.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

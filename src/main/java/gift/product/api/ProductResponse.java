@@ -1,4 +1,6 @@
-package gift.product;
+package gift.product.api;
+
+import gift.product.Product;
 
 public record ProductResponse(
     Long id,

@@ -1,6 +1,9 @@
-package gift.order;
+package gift.order.api;
 
 import gift.auth.AuthenticationResolver;
+import gift.order.KakaoMessageClient;
+import gift.order.Order;
+import gift.order.OrderRepository;
 import gift.member.Member;
 import gift.member.MemberRepository;
 import gift.option.Option;

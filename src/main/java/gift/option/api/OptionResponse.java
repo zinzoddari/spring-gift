@@ -1,4 +1,6 @@
-package gift.option;
+package gift.option.api;
+
+import gift.option.Option;
 
 public record OptionResponse(
     Long id,

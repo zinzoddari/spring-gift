@@ -1,5 +1,8 @@
-package gift.option;
+package gift.option.api;
 
+import gift.option.Option;
+import gift.option.OptionNameValidator;
+import gift.option.OptionRepository;
 import gift.product.Product;
 import gift.product.ProductRepository;
 import jakarta.validation.Valid;

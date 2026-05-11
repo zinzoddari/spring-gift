@@ -1,4 +1,6 @@
-package gift.order;
+package gift.order.api;
+
+import gift.order.Order;
 
 import java.time.LocalDateTime;
 
