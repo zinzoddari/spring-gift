@@ -2,6 +2,8 @@ package gift.wish.api;
 
 import gift.auth.AuthenticationResolver;
 import gift.wish.Wish;
+import gift.wish.dto.WishRequest;
+import gift.wish.dto.WishResponse;
 import gift.wish.repository.WishRepository;
 import gift.product.repository.ProductRepository;
 import jakarta.validation.Valid;

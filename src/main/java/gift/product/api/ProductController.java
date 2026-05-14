@@ -4,6 +4,8 @@ import gift.category.Category;
 import gift.category.repository.CategoryRepository;
 import gift.product.Product;
 import gift.product.ProductNameValidator;
+import gift.product.dto.ProductRequest;
+import gift.product.dto.ProductResponse;
 import gift.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

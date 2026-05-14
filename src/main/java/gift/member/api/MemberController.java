@@ -1,8 +1,9 @@
 package gift.member.api;
 
 import gift.auth.JwtProvider;
-import gift.auth.api.TokenResponse;
+import gift.auth.dto.TokenResponse;
 import gift.member.Member;
+import gift.member.dto.MemberRequest;
 import gift.member.repository.MemberRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

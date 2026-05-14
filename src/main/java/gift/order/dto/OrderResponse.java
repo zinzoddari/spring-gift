@@ -1,4 +1,4 @@
-package gift.order.api;
+package gift.order.dto;
 
 import gift.order.Order;
 

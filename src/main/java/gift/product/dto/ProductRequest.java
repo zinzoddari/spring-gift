@@ -1,4 +1,4 @@
-package gift.product.api;
+package gift.product.dto;
 
 import gift.category.Category;
 import gift.product.Product;

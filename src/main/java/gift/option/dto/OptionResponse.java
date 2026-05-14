@@ -1,4 +1,4 @@
-package gift.option.api;
+package gift.option.dto;
 
 import gift.option.Option;
 

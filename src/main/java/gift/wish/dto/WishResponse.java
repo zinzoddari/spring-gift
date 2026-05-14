@@ -1,4 +1,4 @@
-package gift.wish.api;
+package gift.wish.dto;
 
 import gift.wish.Wish;
 

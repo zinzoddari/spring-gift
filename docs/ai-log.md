@@ -2,6 +2,18 @@
 
 ---
 
+## 2026-05-14
+
+### 작업: repository/ 서브 패키지 이동
+- 요청: 각 도메인 하위 *Repository.java를 repository/ 서브 패키지로 이동
+- 결과: `gift/*/repository/*Repository.java` 위치로 이동, import 경로 수정
+
+### 작업: dto/ 서브 패키지 이동
+- 요청: 각 도메인 api/ 하위 *Request.java, *Response.java를 dto/ 서브 패키지로 이동
+- 결과: `gift/*/dto/*Request.java`, `gift/*/dto/*Response.java` 위치로 이동, 컨트롤러 import 경로 수정
+
+---
+
 ## 2026-05-11
 
 ### 작업: ADR 템플릿 작성

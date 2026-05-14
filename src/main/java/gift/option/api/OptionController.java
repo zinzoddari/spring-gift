@@ -2,6 +2,8 @@ package gift.option.api;
 
 import gift.option.Option;
 import gift.option.OptionNameValidator;
+import gift.option.dto.OptionRequest;
+import gift.option.dto.OptionResponse;
 import gift.option.repository.OptionRepository;
 import gift.product.Product;
 import gift.product.repository.ProductRepository;
