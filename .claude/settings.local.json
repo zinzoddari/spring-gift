@@ -12,7 +12,8 @@
       "Bash(./gradlew compileJava --stacktrace)",
       "Bash(JAVA_HOME=/Users/greencar/Library/Java/JavaVirtualMachines/corretto-21.0.10/Contents/Home ./gradlew compileJava)",
       "Bash(rtk read *)",
-      "Bash(rtk grep *)"
+      "Bash(rtk grep *)",
+      "Bash(./gradlew test *)"
     ]
   }
 }
