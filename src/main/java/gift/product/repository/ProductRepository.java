@@ -1,5 +1,6 @@
-package gift.product;
+package gift.product.repository;
 
+import gift.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {

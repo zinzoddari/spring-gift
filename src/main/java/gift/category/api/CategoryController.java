@@ -1,7 +1,7 @@
 package gift.category.api;
 
 import gift.category.Category;
-import gift.category.CategoryRepository;
+import gift.category.repository.CategoryRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

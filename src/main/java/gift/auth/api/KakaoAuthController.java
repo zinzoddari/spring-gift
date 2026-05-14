@@ -4,7 +4,7 @@ import gift.auth.JwtProvider;
 import gift.auth.KakaoLoginClient;
 import gift.auth.KakaoLoginProperties;
 import gift.member.Member;
-import gift.member.MemberRepository;
+import gift.member.repository.MemberRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

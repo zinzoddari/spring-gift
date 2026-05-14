@@ -2,9 +2,9 @@ package gift.option.api;
 
 import gift.option.Option;
 import gift.option.OptionNameValidator;
-import gift.option.OptionRepository;
+import gift.option.repository.OptionRepository;
 import gift.product.Product;
-import gift.product.ProductRepository;
+import gift.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
