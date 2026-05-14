@@ -1,7 +1,7 @@
 package gift.order.api;
 
 import gift.auth.AuthenticationResolver;
-import gift.order.KakaoMessageClient;
+import gift.infra.kakao.KakaoMessageClient;
 import gift.order.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;

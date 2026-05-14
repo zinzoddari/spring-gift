@@ -1,9 +1,9 @@
 package gift.auth.api;
 
 import gift.auth.JwtProvider;
-import gift.auth.KakaoLoginClient;
-import gift.auth.KakaoLoginProperties;
 import gift.auth.dto.TokenResponse;
+import gift.infra.kakao.KakaoLoginClient;
+import gift.infra.kakao.KakaoLoginProperties;
 import gift.member.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.http.HttpHeaders;
