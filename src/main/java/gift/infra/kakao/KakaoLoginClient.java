@@ -25,7 +25,7 @@ public class KakaoLoginClient {
         params.add("client_secret", properties.clientSecret());
 
         return restClient.post()
-            .uri("https://kauth.kakao.com/oauth/token")
+            .uri(properties.authBaseUrl() + "/oauth/token")
             .header("Content-Type", "application/x-www-form-urlencoded")
             .body(params)
             .retrieve()
@@ -34,7 +34,7 @@ public class KakaoLoginClient {
 
     public KakaoUserResponse requestUserInfo(String accessToken) {
         return restClient.get()
-            .uri("https://kapi.kakao.com/v2/user/me")
+            .uri(properties.apiBaseUrl() + "/v2/user/me")
             .header("Authorization", "Bearer " + accessToken)
             .retrieve()
             .body(KakaoUserResponse.class);
