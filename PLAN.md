@@ -1,7 +1,7 @@
 # PLAN
 
 ## 지금
-- [ ] Client 역할 infra로 분리하기
+- [ ] RestClient 타임아웃 설정 (RestClientConfig — connectTimeout 3s / readTimeout 5s)
 - [ ] 분리 후 테스트 코드 작성
 
 ## 다음
@@ -22,3 +22,4 @@
 - [x] 패키지 구조 변경 (api/view 서브 패키지, ADR-001)
 - [x] repository/ 서브 패키지 이동
 - [x] dto/ 서브 패키지 이동 (*Request, *Response)
+- [x] Client 역할 infra로 분리하기 (gift.infra.kakao, ADR-002)
