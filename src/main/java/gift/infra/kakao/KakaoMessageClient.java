@@ -8,9 +8,11 @@ import org.springframework.web.client.RestClient;
 
 @Component
 public class KakaoMessageClient {
+    private final KakaoLoginProperties properties;
     private final RestClient restClient;
 
-    public KakaoMessageClient(RestClient.Builder builder) {
+    public KakaoMessageClient(KakaoLoginProperties properties, RestClient.Builder builder) {
+        this.properties = properties;
         this.restClient = builder.build();
     }
 
@@ -21,7 +23,7 @@ public class KakaoMessageClient {
         params.add("template_object", templateObject);
 
         restClient.post()
-            .uri("https://kapi.kakao.com/v2/api/talk/memo/default/send")
+            .uri(properties.apiBaseUrl() + "/v2/api/talk/memo/default/send")
             .header("Authorization", "Bearer " + accessToken)
             .header("Content-Type", "application/x-www-form-urlencoded")
             .body(params)
