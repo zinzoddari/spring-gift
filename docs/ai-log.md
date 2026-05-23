@@ -28,6 +28,24 @@
 
 ## 2026-05-23
 
+### 작업: application.properties → application.yaml 전환
+- 요청: properties 파일을 yaml로 전환
+- 결과: `src/main/resources/application.yaml` 생성, `application.properties` 삭제
+
+### 작업: KakaoClientProvider 도입 및 KakaoPath enum 추가
+- 요청: KakaoClient를 base URL별로 Bean으로 분리하는 Provider/Factory 방식 도입
+- 결과:
+    - `KakaoClient`: `@Component` 제거, `RestClient.Builder` 대신 `RestClient` 직접 주입받도록 변경
+    - `KakaoClientProvider`: `@Configuration` — `ObjectProvider<RestClient.Builder>`로 fresh 빌더를 가져와 `kakaoAuthClient`(kauth.kakao.com), `kakaoApiClient`(kapi.kakao.com) 두 Bean 등록
+    - `KakaoPath`: URL 경로 enum — `OAUTH_TOKEN`, `USER_ME`, `SEND_MESSAGE`
+    - `KakaoLoginClient`: `@Qualifier`로 authClient/apiClient 주입, `KakaoPath` 사용
+    - 테스트: `RestClient.builder().baseUrl(mockWebServer.url("/"))` 패턴으로 업데이트
+- 근거: 클라이언트 코드에서 base URL 조합 책임 제거, 경로 상수 중앙화
+
+### 작업: KakaoClient ObjectMapper 제거
+- 요청: RestClient 자체 역직렬화 기능 활용
+- 결과: `ObjectMapper` 및 `deserialize()` 완전 제거, `TypeReference` → `ParameterizedTypeReference`로 교체해 RestClient가 직접 역직렬화
+
 ### 작업: KakaoLoginClient → KakaoClient 리팩토링
 - 요청: KakaoLoginClient가 RestClient를 직접 사용하던 것을 KakaoClient 래퍼로 교체
 - 결과:

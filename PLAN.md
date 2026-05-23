@@ -17,6 +17,11 @@
 - [ ] 도메인 클래스 doamin 패키지로 이동하기
 
 ## 완료
+- [x] application.properties → application.yaml 전환
+- [x] KakaoClientProvider 도입 — base URL 별 KakaoClient Bean 분리 (kakaoAuthClient / kakaoApiClient)
+- [x] KakaoPath enum 추가 — 경로 상수 관리
+- [x] KakaoLoginClient → authClient / apiClient 주입
+- [x] KakaoClient — ObjectMapper 제거, ParameterizedTypeReference로 RestClient 직접 역직렬화
 - [x] KakaoLoginClient → KakaoClient 의존으로 리팩토링
 - [x] ADR 템플릿 작성
 - [x] ARCHITECTURE.md 작성

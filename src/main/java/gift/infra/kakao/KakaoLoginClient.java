@@ -2,18 +2,25 @@ package gift.infra.kakao;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 
 @Component
 public class KakaoLoginClient {
     private final KakaoLoginProperties properties;
-    private final KakaoClient kakaoClient;
+    private final KakaoClient authClient;
+    private final KakaoClient apiClient;
 
-    public KakaoLoginClient(final KakaoLoginProperties properties, final KakaoClient kakaoClient) {
+    public KakaoLoginClient(
+            final KakaoLoginProperties properties,
+        @Qualifier("kakaoAuthClient") final KakaoClient authClient,
+        @Qualifier("kakaoApiClient") final KakaoClient apiClient
+    ) {
         this.properties = properties;
-        this.kakaoClient = kakaoClient;
+        this.authClient = authClient;
+        this.apiClient = apiClient;
     }
 
     public KakaoTokenResponse requestAccessToken(String code) {
@@ -24,19 +31,11 @@ public class KakaoLoginClient {
         params.add("code", code);
         params.add("client_secret", properties.clientSecret());
 
-        return kakaoClient.post(
-            properties.authBaseUrl() + "/oauth/token",
-            params,
-            new TypeReference<>() {}
-        );
+        return authClient.post(KakaoPath.OAUTH_TOKEN.path(), params, new ParameterizedTypeReference<>() {});
     }
 
     public KakaoUserResponse requestUserInfo(String accessToken) {
-        return kakaoClient.get(
-            properties.apiBaseUrl() + "/v2/user/me",
-            accessToken,
-            new TypeReference<>() {}
-        );
+        return apiClient.get(KakaoPath.USER_ME.path(), accessToken, new ParameterizedTypeReference<>() {});
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

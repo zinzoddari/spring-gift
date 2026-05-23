@@ -3,8 +3,7 @@ package gift.infra.kakao;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.ParameterizedTypeReference;
 import java.io.IOException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -28,7 +27,8 @@ class KakaoClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        kakaoClient = new KakaoClient(RestClient.builder(), new ObjectMapper());
+        RestClient restClient = RestClient.builder().baseUrl(mockWebServer.url("/").toString()).build();
+        kakaoClient = new KakaoClient(restClient);
     }
 
     @AfterEach
@@ -55,13 +55,12 @@ class KakaoClientTest {
                     .setBody("{\"value\": \"hello\"}")
                     .addHeader("Content-Type", "application/json"));
 
-                final String uri = mockWebServer.url("/oauth/token").toString();
                 final MultiValueMap<String, String> input = new LinkedMultiValueMap<>();
                 input.add("grant_type", "authorization_code");
                 input.add("code", "auth-code");
 
                 // when
-                final TestResponse response = kakaoClient.post(uri, input, new TypeReference<>() {});
+                final TestResponse response = kakaoClient.post("/oauth/token", input, new ParameterizedTypeReference<>() {});
 
                 // then
                 final RecordedRequest request = mockWebServer.takeRequest();
@@ -86,12 +85,11 @@ class KakaoClientTest {
                     .setBody("{\"value\": \"hello\"}")
                     .addHeader("Content-Type", "application/json"));
 
-                final String uri = mockWebServer.url("/test/path").toString();
                 final MultiValueMap<String, String> input = new LinkedMultiValueMap<>();
                 input.add("key", "val");
 
                 // when
-                final TestResponse response = kakaoClient.post(uri, "token123", input, new TypeReference<>() {});
+                final TestResponse response = kakaoClient.post("/test/path", "token123", input, new ParameterizedTypeReference<>() {});
 
                 // then
                 final RecordedRequest request = mockWebServer.takeRequest();
@@ -111,10 +109,8 @@ class KakaoClientTest {
             void throwsExceptionOn4xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-                final String uri = mockWebServer.url("/test/path").toString();
-
                 // when & then
-                assertThatThrownBy(() -> kakaoClient.post(uri, new LinkedMultiValueMap<>(), new TypeReference<TestResponse>() {}))
+                assertThatThrownBy(() -> kakaoClient.post("/test/path", new LinkedMultiValueMap<>(), new ParameterizedTypeReference<TestResponse>() {}))
                     .isInstanceOf(Exception.class);
             }
 
@@ -123,10 +119,8 @@ class KakaoClientTest {
             void throwsExceptionOn5xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-                final String uri = mockWebServer.url("/test/path").toString();
-
                 // when & then
-                assertThatThrownBy(() -> kakaoClient.post(uri, new LinkedMultiValueMap<>(), new TypeReference<TestResponse>() {}))
+                assertThatThrownBy(() -> kakaoClient.post("/test/path", new LinkedMultiValueMap<>(), new ParameterizedTypeReference<TestResponse>() {}))
                     .isInstanceOf(Exception.class);
             }
         }
@@ -146,12 +140,11 @@ class KakaoClientTest {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
-                final String uri = mockWebServer.url("/talk/memo/send").toString();
                 final MultiValueMap<String, String> input = new LinkedMultiValueMap<>();
                 input.add("template_object", "{}");
 
                 // when
-                kakaoClient.postVoid(uri, "token123", input);
+                kakaoClient.postVoid("/talk/memo/send", "token123", input);
 
                 // then
                 final RecordedRequest request = mockWebServer.takeRequest();
@@ -172,10 +165,8 @@ class KakaoClientTest {
             void throwsExceptionOn4xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(401));
-                final String uri = mockWebServer.url("/talk/memo/send").toString();
-
                 // when & then
-                assertThatThrownBy(() -> kakaoClient.postVoid(uri, "bad-token", new LinkedMultiValueMap<>()))
+                assertThatThrownBy(() -> kakaoClient.postVoid("/talk/memo/send","bad-token", new LinkedMultiValueMap<>()))
                     .isInstanceOf(Exception.class);
             }
 
@@ -184,10 +175,8 @@ class KakaoClientTest {
             void throwsExceptionOn5xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-                final String uri = mockWebServer.url("/talk/memo/send").toString();
-
                 // when & then
-                assertThatThrownBy(() -> kakaoClient.postVoid(uri, "token", new LinkedMultiValueMap<>()))
+                assertThatThrownBy(() -> kakaoClient.postVoid("/talk/memo/send","token", new LinkedMultiValueMap<>()))
                     .isInstanceOf(Exception.class);
             }
         }
@@ -209,10 +198,8 @@ class KakaoClientTest {
                     .setBody("{\"value\": \"world\"}")
                     .addHeader("Content-Type", "application/json"));
 
-                final String uri = mockWebServer.url("/v2/user/me").toString();
-
                 // when
-                final TestResponse response = kakaoClient.get(uri, "token456", new TypeReference<>() {});
+                final TestResponse response = kakaoClient.get("/v2/user/me", "token456", new ParameterizedTypeReference<>() {});
 
                 // then
                 final RecordedRequest request = mockWebServer.takeRequest();
@@ -234,10 +221,8 @@ class KakaoClientTest {
             void throwsExceptionOn4xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(401));
-                final String uri = mockWebServer.url("/v2/user/me").toString();
-
                 // when & then
-                assertThatThrownBy(() -> kakaoClient.get(uri, "bad-token", new TypeReference<TestResponse>() {}))
+                assertThatThrownBy(() -> kakaoClient.get("/v2/user/me", "bad-token", new ParameterizedTypeReference<TestResponse>() {}))
                     .isInstanceOf(Exception.class);
             }
         }
