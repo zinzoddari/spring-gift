@@ -9,9 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "wish")
+@Table(name = "wish", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_wish_member_product", columnNames = {"member_id", "product_id"})
+})
 public class Wish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +37,6 @@ public class Wish {
 
     public Long getId() {
         return id;
-    }
-
-    public Long getMemberId() {
-        return memberId;
     }
 
     public boolean isOwnedBy(final Long memberId) {
