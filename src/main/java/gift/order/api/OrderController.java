@@ -26,11 +26,11 @@ class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<OrderResponse>> getOrders(
+    public PageResponse<OrderResponse> getOrders(
         final MemberInfo memberInfo,
         final Pageable pageable
     ) {
-        return ResponseEntity.ok(orderService.getOrders(memberInfo.id(), pageable));
+        return orderService.getOrders(memberInfo.id(), pageable);
     }
 
     @PostMapping
