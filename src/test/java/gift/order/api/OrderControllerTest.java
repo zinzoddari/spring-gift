@@ -1,6 +1,7 @@
 package gift.order.api;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,18 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gift.auth.AuthenticationResolver;
-import gift.infra.client.kakao.KakaoMessageAdapter;
 import gift.member.domain.Member;
-import gift.member.repository.MemberRepository;
-import gift.option.domain.Option;
-import gift.option.repository.OptionRepository;
-import gift.order.Order;
-import gift.order.repository.OrderRepository;
-import gift.product.domain.Product;
-import gift.wish.repository.WishRepository;
+import gift.order.dto.OrderRequest;
+import gift.order.dto.OrderResponse;
+import gift.order.service.OrderService;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,42 +39,16 @@ class OrderControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private OrderRepository orderRepository;
-
-    @MockitoBean
-    private OptionRepository optionRepository;
-
-    @MockitoBean
-    private WishRepository wishRepository;
-
-    @MockitoBean
-    private MemberRepository memberRepository;
-
-    @MockitoBean
-    private KakaoMessageAdapter kakaoMessageAdapter;
+    private OrderService orderService;
 
     private Member member() {
         final Member member = mock(Member.class);
         given(member.getId()).willReturn(1L);
-        given(member.getKakaoAccessToken()).willReturn(null);
         return member;
     }
 
-    private Option option() {
-        final Option option = mock(Option.class);
-        given(option.getId()).willReturn(1L);
-        given(option.getProduct()).willReturn(mock(Product.class));
-        return option;
-    }
-
-    private Order order(final Option option) {
-        final Order order = mock(Order.class);
-        given(order.getId()).willReturn(1L);
-        given(order.getOption()).willReturn(option);
-        given(order.getQuantity()).willReturn(2);
-        given(order.getMessage()).willReturn("선물입니다");
-        given(order.getOrderDateTime()).willReturn(LocalDateTime.of(2026, 5, 24, 12, 0));
-        return order;
+    private OrderResponse orderResponse() {
+        return new OrderResponse(1L, 1L, 2, LocalDateTime.of(2026, 5, 24, 12, 0), "선물입니다");
     }
 
     @Nested
@@ -95,10 +65,8 @@ class OrderControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                final Option option = option();
-                final Order order = order(option);
-                given(orderRepository.findByMemberId(any(), any(Pageable.class)))
-                    .willReturn(new PageImpl<>(List.of(order)));
+                given(orderService.getOrders(eq(1L), any(Pageable.class)))
+                    .willReturn(new PageImpl<>(List.of(orderResponse())));
 
                 // when & then
                 mockMvc.perform(get("/api/orders")
@@ -125,13 +93,8 @@ class OrderControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                final Option option = option();
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                given(optionRepository.save(option)).willReturn(option);
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-                given(memberRepository.save(member)).willReturn(member);
-                final Order order = order(option);
-                given(orderRepository.save(any(Order.class))).willReturn(order);
+                given(orderService.createOrder(eq(1L), any(OrderRequest.class)))
+                    .willReturn(orderResponse());
 
                 // when & then
                 mockMvc.perform(post("/api/orders")
@@ -156,7 +119,8 @@ class OrderControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(optionRepository.findById(99L)).willReturn(Optional.empty());
+                given(orderService.createOrder(eq(1L), any(OrderRequest.class)))
+                    .willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(post("/api/orders")
