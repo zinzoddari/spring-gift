@@ -1,10 +1,10 @@
 package gift.wish.api;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,12 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import gift.auth.AuthenticationResolver;
 import gift.member.domain.Member;
-import gift.product.domain.Product;
-import gift.product.repository.ProductRepository;
-import gift.wish.Wish;
-import gift.wish.repository.WishRepository;
+import gift.common.dto.PageResponse;
+import gift.wish.dto.WishAddResult;
+import gift.wish.dto.WishResponse;
+import gift.wish.service.WishService;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,10 +39,7 @@ class WishControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private WishRepository wishRepository;
-
-    @MockitoBean
-    private ProductRepository productRepository;
+    private WishService wishService;
 
     @MockitoBean
     private AuthenticationResolver authenticationResolver;
@@ -53,22 +50,8 @@ class WishControllerTest {
         return member;
     }
 
-    private Product product() {
-        final Product product = mock(Product.class);
-        given(product.getId()).willReturn(1L);
-        given(product.getName()).willReturn("상품A");
-        given(product.getPrice()).willReturn(10_000);
-        given(product.getImageUrl()).willReturn("http://img.jpg");
-        return product;
-    }
-
-    private Wish wish(Member member, Product product) {
-        final Long memberId = member.getId();
-        final Wish wish = mock(Wish.class);
-        given(wish.getId()).willReturn(1L);
-        given(wish.getMemberId()).willReturn(memberId);
-        given(wish.getProduct()).willReturn(product);
-        return wish;
+    private WishResponse wishResponse() {
+        return new WishResponse(1L, 1L, "상품A", 10_000, "http://img.jpg");
     }
 
     @Nested
@@ -84,10 +67,9 @@ class WishControllerTest {
             void returnsWishPage() throws Exception {
                 // given
                 final Member member = member();
-                final Wish wish = wish(member, product());
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(wishRepository.findByMemberId(eq(1L), any(Pageable.class)))
-                    .willReturn(new PageImpl<>(List.of(wish)));
+                given(wishService.getWishes(eq(1L), any(Pageable.class)))
+                    .willReturn(PageResponse.from(new PageImpl<>(List.of(wishResponse()))));
 
                 // when & then
                 mockMvc.perform(get("/api/wishes")
@@ -128,12 +110,9 @@ class WishControllerTest {
             void returnsCreated() throws Exception {
                 // given
                 final Member member = member();
-                final Product product = product();
-                final Wish wish = wish(member, product);
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(wishRepository.findByMemberIdAndProductId(1L, 1L)).willReturn(Optional.empty());
-                given(wishRepository.save(any(Wish.class))).willReturn(wish);
+                given(wishService.addWish(eq(1L), any()))
+                    .willReturn(new WishAddResult(wishResponse(), true));
 
                 // when & then
                 mockMvc.perform(post("/api/wishes")
@@ -151,11 +130,9 @@ class WishControllerTest {
             void returnsOkWhenDuplicate() throws Exception {
                 // given
                 final Member member = member();
-                final Product product = product();
-                final Wish existing = wish(member, product);
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(wishRepository.findByMemberIdAndProductId(1L, 1L)).willReturn(Optional.of(existing));
+                given(wishService.addWish(eq(1L), any()))
+                    .willReturn(new WishAddResult(wishResponse(), false));
 
                 // when & then
                 mockMvc.perform(post("/api/wishes")
@@ -195,7 +172,7 @@ class WishControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(productRepository.findById(99L)).willReturn(Optional.empty());
+                given(wishService.addWish(eq(1L), any())).willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(post("/api/wishes")
@@ -222,10 +199,8 @@ class WishControllerTest {
             void returnsNoContent() throws Exception {
                 // given
                 final Member member = member();
-                final Wish wish = wish(member, product());
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(wishRepository.findById(1L)).willReturn(Optional.of(wish));
-                willDoNothing().given(wishRepository).delete(wish);
+                willDoNothing().given(wishService).removeWish(eq(1L), eq(1L));
 
                 // when & then
                 mockMvc.perform(delete("/api/wishes/1")
@@ -256,7 +231,7 @@ class WishControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(wishRepository.findById(99L)).willReturn(Optional.empty());
+                willThrow(new NoSuchElementException()).given(wishService).removeWish(eq(1L), eq(99L));
 
                 // when & then
                 mockMvc.perform(delete("/api/wishes/99")
@@ -269,10 +244,8 @@ class WishControllerTest {
             void returnsForbidden() throws Exception {
                 // given
                 final Member member = member();
-                final Wish wish = mock(Wish.class);
-                given(wish.getMemberId()).willReturn(2L);
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(wishRepository.findById(1L)).willReturn(Optional.of(wish));
+                willThrow(new SecurityException()).given(wishService).removeWish(eq(1L), eq(1L));
 
                 // when & then
                 mockMvc.perform(delete("/api/wishes/1")
