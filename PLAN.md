@@ -1,9 +1,6 @@
 # PLAN
 
 ## 지금
-- [ ] AdminMemberController / AdminProductController 리팩토링 (view 계층 서비스 분리, 트랜잭션 경계)
-- [ ] 테스트 환경 설정
-- [ ] 누락 기능 구현
 
 ## 완료
 - [x] CategoryController 리팩토링 (CategoryService 계층 분리, 트랜잭션 경계)
