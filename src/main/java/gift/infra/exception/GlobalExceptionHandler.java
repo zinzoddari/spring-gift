@@ -22,4 +22,9 @@ class GlobalExceptionHandler {
     public ResponseEntity<Void> handleUnauthorized(UnauthorizedException e) {
         return ResponseEntity.status(401).build();
     }
+
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<Void> handleForbidden(SecurityException e) {
+        return ResponseEntity.status(403).build();
+    }
 }
