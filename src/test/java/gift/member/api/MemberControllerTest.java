@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gift.auth.AuthenticationResolver;
 import gift.member.dto.MemberRequest;
 import gift.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,9 @@ class MemberControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
     private MemberService memberService;

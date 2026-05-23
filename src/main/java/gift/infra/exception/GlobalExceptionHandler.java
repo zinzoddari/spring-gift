@@ -17,4 +17,9 @@ class GlobalExceptionHandler {
     public ResponseEntity<String> handleNoSuchElement(NoSuchElementException e) {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Void> handleUnauthorized(UnauthorizedException e) {
+        return ResponseEntity.status(401).build();
+    }
 }

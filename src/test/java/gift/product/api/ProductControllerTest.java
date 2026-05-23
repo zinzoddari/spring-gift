@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gift.auth.AuthenticationResolver;
 import gift.common.dto.PageResponse;
 import gift.product.dto.ProductRequest;
 import gift.product.dto.ProductResponse;
@@ -35,6 +36,9 @@ class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
     private ProductService productService;
