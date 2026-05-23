@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
-@DisplayName("KakaoLoginClient")
-class KakaoLoginClientTest {
+@DisplayName("KakaoLoginAdapter")
+class KakaoLoginAdapterTest {
 
     private MockWebServer mockWebServer;
-    private KakaoLoginClient kakaoLoginClient;
+    private KakaoLoginAdapter kakaoLoginClient;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -37,7 +37,7 @@ class KakaoLoginClientTest {
 
         final RestClient restClient = RestClient.builder().baseUrl(baseUrl).build();
         final KakaoClient kakaoClient = new KakaoClient(restClient);
-        kakaoLoginClient = new KakaoLoginClient(properties, kakaoClient, kakaoClient);
+        kakaoLoginClient = new KakaoLoginAdapter(properties, kakaoClient, kakaoClient);
     }
 
     @AfterEach
@@ -62,7 +62,7 @@ class KakaoLoginClientTest {
                     .addHeader("Content-Type", "application/json"));
 
                 // when
-                final KakaoLoginClient.KakaoTokenResponse response =
+                final KakaoLoginAdapter.KakaoTokenResponse response =
                     kakaoLoginClient.requestAccessToken("auth-code");
 
                 // then
@@ -121,7 +121,7 @@ class KakaoLoginClientTest {
                     .addHeader("Content-Type", "application/json"));
 
                 // when
-                final KakaoLoginClient.KakaoUserResponse response =
+                final KakaoLoginAdapter.KakaoUserResponse response =
                     kakaoLoginClient.requestUserInfo("access-token");
 
                 // then
@@ -144,7 +144,7 @@ class KakaoLoginClientTest {
                     .addHeader("Content-Type", "application/json"));
 
                 // when
-                final KakaoLoginClient.KakaoUserResponse response =
+                final KakaoLoginAdapter.KakaoUserResponse response =
                     kakaoLoginClient.requestUserInfo("access-token");
 
                 // then

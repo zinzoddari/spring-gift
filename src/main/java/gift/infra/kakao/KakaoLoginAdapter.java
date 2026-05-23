@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 
 @Component
-public class KakaoLoginClient {
+public class KakaoLoginAdapter {
     private final KakaoLoginProperties properties;
     private final KakaoClient authClient;
     private final KakaoClient apiClient;
 
-    public KakaoLoginClient(
+    public KakaoLoginAdapter(
             final KakaoLoginProperties properties,
         @Qualifier("kakaoAuthClient") final KakaoClient authClient,
         @Qualifier("kakaoApiClient") final KakaoClient apiClient

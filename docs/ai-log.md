@@ -46,6 +46,10 @@
 - 요청: RestClient 자체 역직렬화 기능 활용
 - 결과: `ObjectMapper` 및 `deserialize()` 완전 제거, `TypeReference` → `ParameterizedTypeReference`로 교체해 RestClient가 직접 역직렬화
 
+### 작업: KakaoLoginClient → KakaoLoginAdapter 이름 변경
+- 요청: KakaoLoginClient를 KakaoLoginAdapter로 rename
+- 결과: `KakaoLoginClient.java` → `KakaoLoginAdapter.java`, `KakaoLoginClientTest.java` → `KakaoLoginAdapterTest.java`, `KakaoAuthController` import 수정
+
 ### 작업: KakaoLoginClient → KakaoClient 리팩토링
 - 요청: KakaoLoginClient가 RestClient를 직접 사용하던 것을 KakaoClient 래퍼로 교체
 - 결과:

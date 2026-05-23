@@ -1,20 +1,17 @@
 # PLAN
 
 ## 지금
-- [ ] KakaoLoginAdapter, KakaoMessageAdapter 작성 (ADR-003)
-- [ ] 기존 KakaoLoginClient, KakaoMessageClient 제거 및 컨트롤러 교체
-- [ ] KakaoLoginAdapterTest, KakaoMessageAdapterTest 작성
+- [ ] KakaoMessageAdapter 작성 및 테스트
 
 ## 다음
 - [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기
 
 ## 할 것
-- [ ] 테스트 환경 설정
-- [ ] 스타일 정리
 - [ ] 서비스 계층 추출
 - [ ] 트랜잭션 경계 추가
+- [ ] 테스트 환경 설정
 - [ ] 누락 작동 구현
-- [ ] 도메인 클래스 doamin 패키지로 이동하기
+- [ ] 도메인 클래스 domain 패키지로 이동
 
 ## 완료
 - [x] application.properties → application.yaml 전환
@@ -22,6 +19,7 @@
 - [x] KakaoPath enum 추가 — 경로 상수 관리
 - [x] KakaoLoginClient → authClient / apiClient 주입
 - [x] KakaoClient — ObjectMapper 제거, ParameterizedTypeReference로 RestClient 직접 역직렬화
+- [x] KakaoLoginClient → KakaoLoginAdapter 이름 변경 및 KakaoAuthController 의존 수정
 - [x] KakaoLoginClient → KakaoClient 의존으로 리팩토링
 - [x] ADR 템플릿 작성
 - [x] ARCHITECTURE.md 작성

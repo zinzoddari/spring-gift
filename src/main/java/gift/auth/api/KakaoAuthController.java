@@ -2,7 +2,7 @@ package gift.auth.api;
 
 import gift.auth.JwtProvider;
 import gift.auth.dto.TokenResponse;
-import gift.infra.kakao.KakaoLoginClient;
+import gift.infra.kakao.KakaoLoginAdapter;
 import gift.infra.kakao.KakaoLoginProperties;
 import gift.member.Member;
 import gift.member.repository.MemberRepository;
@@ -25,13 +25,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(path = "/api/auth/kakao")
 public class KakaoAuthController {
     private final KakaoLoginProperties properties;
-    private final KakaoLoginClient kakaoLoginClient;
+    private final KakaoLoginAdapter kakaoLoginClient;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
     public KakaoAuthController(
         KakaoLoginProperties properties,
-        KakaoLoginClient kakaoLoginClient,
+        KakaoLoginAdapter kakaoLoginClient,
         MemberRepository memberRepository,
         JwtProvider jwtProvider
     ) {
@@ -58,8 +58,8 @@ public class KakaoAuthController {
 
     @GetMapping(path = "/callback")
     public ResponseEntity<TokenResponse> callback(@RequestParam("code") String code) {
-        KakaoLoginClient.KakaoTokenResponse kakaoToken = kakaoLoginClient.requestAccessToken(code);
-        KakaoLoginClient.KakaoUserResponse kakaoUser = kakaoLoginClient.requestUserInfo(kakaoToken.accessToken());
+        KakaoLoginAdapter.KakaoTokenResponse kakaoToken = kakaoLoginClient.requestAccessToken(code);
+        KakaoLoginAdapter.KakaoUserResponse kakaoUser = kakaoLoginClient.requestUserInfo(kakaoToken.accessToken());
         String email = kakaoUser.email();
 
         Member member = memberRepository.findByEmail(email)
