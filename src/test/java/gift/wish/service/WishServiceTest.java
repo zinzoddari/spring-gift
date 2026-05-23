@@ -158,6 +158,26 @@ class WishServiceTest {
     }
 
     @Nested
+    @DisplayName("상품으로 위시리스트를 삭제할 때,")
+    class RemoveWishByProduct {
+
+        @Nested
+        @DisplayName("성공하면,")
+        class WhenSuccess {
+
+            @Test
+            @DisplayName("상품 ID로 삭제를 호출한다.")
+            void callsDeleteByMemberIdAndProductId() {
+                // when
+                wishService.removeWishByProduct(1L, 1L);
+
+                // then
+                verify(wishRepository).deleteByMemberIdAndProductId(1L, 1L);
+            }
+        }
+    }
+
+    @Nested
     @DisplayName("위시리스트를 삭제할 때,")
     class RemoveWish {
 

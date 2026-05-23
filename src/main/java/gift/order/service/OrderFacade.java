@@ -9,7 +9,7 @@ import gift.order.domain.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
 import gift.order.event.OrderCreatedEvent;
-import java.util.Optional;
+import gift.wish.service.WishService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,18 +21,20 @@ public class OrderFacade {
     private final OptionService optionService;
     private final MemberService memberService;
     private final OrderService orderService;
-
+    private final WishService wishService;
     private final ApplicationEventPublisher eventPublisher;
 
     public OrderFacade(
         final OptionService optionService,
         final MemberService memberService,
         final OrderService orderService,
+        final WishService wishService,
         final ApplicationEventPublisher eventPublisher
     ) {
         this.optionService = optionService;
         this.memberService = memberService;
         this.orderService = orderService;
+        this.wishService = wishService;
         this.eventPublisher = eventPublisher;
     }
 
@@ -49,7 +51,7 @@ public class OrderFacade {
      *   <li>옵션 재고 차감 (옵션이 존재하지 않으면 예외 발생)</li>
      *   <li>회원 포인트 차감 (포인트 부족 시 예외 발생)</li>
      *   <li>주문 저장</li>
-     *   <li>위시리스트에서 해당 상품 제거 (TODO: 미구현)</li>
+     *   <li>위시리스트에서 해당 상품 제거</li>
      *   <li>카카오 알림 이벤트 발행 (커밋 후 리스너에서 처리, 실패해도 주문에 영향 없음)</li>
      * </ol>
      */
@@ -59,7 +61,7 @@ public class OrderFacade {
         final Member member = memberService.deductPoint(memberId, option.calculatePrice(request.quantity()));
         final Order order = orderService.save(option, memberId, request.quantity(), request.message());
 
-        // TODO: 위시리스트에 해당 상품이 있으면 제거
+        wishService.removeWishByProduct(memberId, option.getProduct().getId());
 
         eventPublisher.publishEvent(new OrderCreatedEvent(
             member.getKakaoAccessToken(),

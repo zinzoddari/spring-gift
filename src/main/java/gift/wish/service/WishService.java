@@ -43,6 +43,11 @@ public class WishService {
     }
 
     @Transactional
+    public void removeWishByProduct(final Long memberId, final Long productId) {
+        wishRepository.deleteByMemberIdAndProductId(memberId, productId);
+    }
+
+    @Transactional
     public void removeWish(final Long memberId, final Long wishId) {
         final Wish wish = wishRepository.findById(wishId)
             .orElseThrow(() -> new NoSuchElementException("위시를 찾을 수 없습니다."));

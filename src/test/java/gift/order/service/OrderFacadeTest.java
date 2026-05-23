@@ -20,6 +20,7 @@ import gift.common.dto.PageResponse;
 import gift.order.dto.OrderResponse;
 import gift.order.event.OrderCreatedEvent;
 import gift.product.domain.Product;
+import gift.wish.service.WishService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -46,6 +47,9 @@ class OrderFacadeTest {
 
     @Mock
     private OrderService orderService;
+
+    @Mock
+    private WishService wishService;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
@@ -101,13 +105,14 @@ class OrderFacadeTest {
             void savesOrderAndPublishesEvent() {
                 // given
                 final Product product = mock(Product.class);
+                given(product.getId()).willReturn(1L);
+                given(product.getName()).willReturn("상품A");
+                given(product.getPrice()).willReturn(10_000);
                 final Option option = mock(Option.class);
                 given(option.getId()).willReturn(1L);
                 given(option.calculatePrice(2)).willReturn(20_000);
                 given(option.getName()).willReturn("옵션A");
                 given(option.getProduct()).willReturn(product);
-                given(product.getName()).willReturn("상품A");
-                given(product.getPrice()).willReturn(10_000);
                 final Member member = mock(Member.class);
                 given(member.getKakaoAccessToken()).willReturn("kakao-token");
                 final Order order = order(option);
@@ -125,6 +130,7 @@ class OrderFacadeTest {
                     softly.assertThat(result.optionId()).isEqualTo(1L);
                     softly.assertThat(result.quantity()).isEqualTo(2);
                 });
+                verify(wishService).removeWishByProduct(1L, 1L);
                 verify(eventPublisher).publishEvent(any(OrderCreatedEvent.class));
             }
         }
