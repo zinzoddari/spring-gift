@@ -1,7 +1,6 @@
 package gift.order.service;
 
 import gift.common.dto.PageResponse;
-import gift.infra.client.kakao.KakaoMessageAdapter;
 import gift.member.domain.Member;
 import gift.member.service.MemberService;
 import gift.option.domain.Option;
@@ -9,6 +8,9 @@ import gift.option.service.OptionService;
 import gift.order.domain.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
+import gift.order.event.OrderCreatedEvent;
+import java.util.Optional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +21,19 @@ public class OrderFacade {
     private final OptionService optionService;
     private final MemberService memberService;
     private final OrderService orderService;
-    private final KakaoMessageAdapter kakaoMessageAdapter;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     public OrderFacade(
         final OptionService optionService,
         final MemberService memberService,
         final OrderService orderService,
-        final KakaoMessageAdapter kakaoMessageAdapter
+        final ApplicationEventPublisher eventPublisher
     ) {
         this.optionService = optionService;
         this.memberService = memberService;
         this.orderService = orderService;
-        this.kakaoMessageAdapter = kakaoMessageAdapter;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +50,7 @@ public class OrderFacade {
      *   <li>회원 포인트 차감 (포인트 부족 시 예외 발생)</li>
      *   <li>주문 저장</li>
      *   <li>위시리스트에서 해당 상품 제거 (TODO: 미구현)</li>
-     *   <li>카카오 알림 전송 (실패해도 주문에 영향 없음)</li>
+     *   <li>카카오 알림 이벤트 발행 (커밋 후 리스너에서 처리, 실패해도 주문에 영향 없음)</li>
      * </ol>
      */
     @Transactional
@@ -55,18 +58,18 @@ public class OrderFacade {
         final Option option = optionService.subtractQuantity(request.optionId(), request.quantity());
         final Member member = memberService.deductPoint(memberId, option.calculatePrice(request.quantity()));
         final Order order = orderService.save(option, memberId, request.quantity(), request.message());
-        // TODO: 위시리스트에 해당 상품이 있으면 제거
-        sendKakaoIfPossible(member, order, option);
-        return OrderResponse.from(order);
-    }
 
-    private void sendKakaoIfPossible(final Member member, final Order order, final Option option) {
-        if (member.getKakaoAccessToken() == null) {
-            return;
-        }
-        try {
-            kakaoMessageAdapter.sendToMe(member.getKakaoAccessToken(), order, option.getProduct());
-        } catch (Exception ignored) {
-        }
+        // TODO: 위시리스트에 해당 상품이 있으면 제거
+
+        eventPublisher.publishEvent(new OrderCreatedEvent(
+            member.getKakaoAccessToken(),
+            option.getProduct().getName(),
+            option.getProduct().getPrice(),
+            option.getName(),
+            request.quantity(),
+            request.message()
+        ));
+
+        return OrderResponse.from(order);
     }
 }

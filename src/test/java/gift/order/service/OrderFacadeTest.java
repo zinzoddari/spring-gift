@@ -9,9 +9,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
-import gift.infra.client.kakao.KakaoMessageAdapter;
 import gift.member.domain.Member;
 import gift.member.service.MemberService;
 import gift.option.domain.Option;
@@ -20,6 +18,7 @@ import gift.order.domain.Order;
 import gift.order.dto.OrderRequest;
 import gift.common.dto.PageResponse;
 import gift.order.dto.OrderResponse;
+import gift.order.event.OrderCreatedEvent;
 import gift.product.domain.Product;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -48,7 +48,7 @@ class OrderFacadeTest {
     private OrderService orderService;
 
     @Mock
-    private KakaoMessageAdapter kakaoMessageAdapter;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private OrderFacade orderFacade;
@@ -97,14 +97,19 @@ class OrderFacadeTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("재고 차감 → 포인트 차감 → 주문 저장 순서로 처리한다.")
-            void createsOrderInOrder() {
+            @DisplayName("주문을 저장하고 OrderCreatedEvent를 발행한다.")
+            void savesOrderAndPublishesEvent() {
                 // given
+                final Product product = mock(Product.class);
                 final Option option = mock(Option.class);
                 given(option.getId()).willReturn(1L);
                 given(option.calculatePrice(2)).willReturn(20_000);
+                given(option.getName()).willReturn("옵션A");
+                given(option.getProduct()).willReturn(product);
+                given(product.getName()).willReturn("상품A");
+                given(product.getPrice()).willReturn(10_000);
                 final Member member = mock(Member.class);
-                given(member.getKakaoAccessToken()).willReturn(null);
+                given(member.getKakaoAccessToken()).willReturn("kakao-token");
                 final Order order = order(option);
                 final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
                 given(optionService.subtractQuantity(1L, 2)).willReturn(option);
@@ -120,56 +125,7 @@ class OrderFacadeTest {
                     softly.assertThat(result.optionId()).isEqualTo(1L);
                     softly.assertThat(result.quantity()).isEqualTo(2);
                 });
-                verifyNoInteractions(kakaoMessageAdapter);
-            }
-
-            @Test
-            @DisplayName("카카오 토큰이 있으면 주문 저장 후 알림을 전송한다.")
-            void sendsKakaoNotificationWhenTokenExists() {
-                // given
-                final Product product = mock(Product.class);
-                final Option option = mock(Option.class);
-                given(option.getId()).willReturn(1L);
-                given(option.calculatePrice(2)).willReturn(20_000);
-                given(option.getProduct()).willReturn(product);
-                final Member member = mock(Member.class);
-                given(member.getKakaoAccessToken()).willReturn("kakao-token");
-                final Order order = order(option);
-                final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
-                given(optionService.subtractQuantity(1L, 2)).willReturn(option);
-                given(memberService.deductPoint(1L, 20_000)).willReturn(member);
-                given(orderService.save(option, 1L, 2, "선물입니다")).willReturn(order);
-
-                // when
-                orderFacade.createOrder(1L, request);
-
-                // then
-                verify(kakaoMessageAdapter).sendToMe("kakao-token", order, product);
-            }
-
-            @Test
-            @DisplayName("카카오 알림 전송이 실패해도 주문은 생성된다.")
-            void succeedsEvenWhenKakaoFails() {
-                // given
-                final Option option = mock(Option.class);
-                given(option.getId()).willReturn(1L);
-                given(option.calculatePrice(2)).willReturn(20_000);
-                given(option.getProduct()).willReturn(mock(Product.class));
-                final Member member = mock(Member.class);
-                given(member.getKakaoAccessToken()).willReturn("kakao-token");
-                final Order order = order(option);
-                final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
-                given(optionService.subtractQuantity(1L, 2)).willReturn(option);
-                given(memberService.deductPoint(1L, 20_000)).willReturn(member);
-                given(orderService.save(option, 1L, 2, "선물입니다")).willReturn(order);
-                willThrow(new RuntimeException("카카오 오류"))
-                    .given(kakaoMessageAdapter).sendToMe(any(), any(), any());
-
-                // when
-                final OrderResponse result = orderFacade.createOrder(1L, request);
-
-                // then
-                assertThat(result.id()).isEqualTo(1L);
+                verify(eventPublisher).publishEvent(any(OrderCreatedEvent.class));
             }
         }
 

@@ -3,10 +3,6 @@ package gift.infra.client.kakao;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import gift.category.Category;
-import gift.option.domain.Option;
-import gift.order.domain.Order;
-import gift.product.domain.Product;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
-
 
 @DisplayName("KakaoMessageAdapter")
 class KakaoMessageAdapterTest {
@@ -57,13 +52,8 @@ class KakaoMessageAdapterTest {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
-                final Category category = new Category("선물", "#FF0000", "http://img.jpg", "선물 카테고리");
-                final Product product = new Product("카카오 선물세트", 10_000, "http://img.jpg", category);
-                final Option option = new Option(product, "기본 옵션", 10);
-                final Order order = new Order(option, 1L, 2, "생일 축하해!");
-
                 // when
-                kakaoMessageClient.sendToMe("access-token", order, product);
+                kakaoMessageClient.sendToMe("access-token", "카카오 선물세트", 10_000, "기본 옵션", 2, "생일 축하해!");
 
                 // then
                 final RecordedRequest request = mockWebServer.takeRequest();
@@ -85,13 +75,8 @@ class KakaoMessageAdapterTest {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
-                final Category category = new Category("선물", "#FF0000", "http://img.jpg", "선물 카테고리");
-                final Product product = new Product("카카오 선물세트", 10_000, "http://img.jpg", category);
-                final Option option = new Option(product, "기본 옵션", 10);
-                final Order order = new Order(option, 1L, 2, null);
-
                 // when
-                kakaoMessageClient.sendToMe("access-token", order, product);
+                kakaoMessageClient.sendToMe("access-token", "카카오 선물세트", 10_000, "기본 옵션", 2, null);
 
                 // then
                 final RecordedRequest request = mockWebServer.takeRequest();
@@ -114,13 +99,9 @@ class KakaoMessageAdapterTest {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(401));
 
-                final Category category = new Category("선물", "#FF0000", "http://img.jpg", "선물 카테고리");
-                final Product product = new Product("카카오 선물세트", 10_000, "http://img.jpg", category);
-                final Option option = new Option(product, "기본 옵션", 10);
-                final Order order = new Order(option, 1L, 1, null);
-
                 // when & then
-                assertThatThrownBy(() -> kakaoMessageClient.sendToMe("invalid-token", order, product))
+                assertThatThrownBy(() ->
+                    kakaoMessageClient.sendToMe("invalid-token", "카카오 선물세트", 10_000, "기본 옵션", 1, null))
                     .isInstanceOf(Exception.class);
             }
 
@@ -130,13 +111,9 @@ class KakaoMessageAdapterTest {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
-                final Category category = new Category("선물", "#FF0000", "http://img.jpg", "선물 카테고리");
-                final Product product = new Product("카카오 선물세트", 10_000, "http://img.jpg", category);
-                final Option option = new Option(product, "기본 옵션", 10);
-                final Order order = new Order(option, 1L, 1, null);
-
                 // when & then
-                assertThatThrownBy(() -> kakaoMessageClient.sendToMe("token", order, product))
+                assertThatThrownBy(() ->
+                    kakaoMessageClient.sendToMe("token", "카카오 선물세트", 10_000, "기본 옵션", 1, null))
                     .isInstanceOf(Exception.class);
             }
         }
