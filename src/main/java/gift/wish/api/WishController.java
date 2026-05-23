@@ -2,6 +2,7 @@ package gift.wish.api;
 
 import gift.auth.AuthenticationResolver;
 import gift.common.dto.PageResponse;
+import gift.member.domain.Member;
 import gift.wish.dto.WishAddResult;
 import gift.wish.dto.WishRequest;
 import gift.wish.dto.WishResponse;
@@ -37,7 +38,7 @@ class WishController {
         @RequestHeader("Authorization") final String authorization,
         final Pageable pageable
     ) {
-        var member = authenticationResolver.extractMember(authorization);
+        final Member member = authenticationResolver.extractMember(authorization);
         if (member == null) {
             return ResponseEntity.status(401).build();
         }
@@ -49,7 +50,7 @@ class WishController {
         @RequestHeader("Authorization") final String authorization,
         @Valid @RequestBody final WishRequest request
     ) {
-        var member = authenticationResolver.extractMember(authorization);
+        final Member member = authenticationResolver.extractMember(authorization);
         if (member == null) {
             return ResponseEntity.status(401).build();
         }
@@ -70,7 +71,7 @@ class WishController {
         @RequestHeader("Authorization") final String authorization,
         @PathVariable final Long id
     ) {
-        var member = authenticationResolver.extractMember(authorization);
+        final Member member = authenticationResolver.extractMember(authorization);
         if (member == null) {
             return ResponseEntity.status(401).build();
         }
