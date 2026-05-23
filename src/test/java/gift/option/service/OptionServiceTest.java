@@ -1,10 +1,12 @@
 package gift.option.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -140,6 +142,61 @@ class OptionServiceTest {
 
                 // when & then
                 assertThatThrownBy(() -> optionService.createOption(1L, request))
+                    .isInstanceOf(IllegalArgumentException.class);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("재고를 차감할 때,")
+    class SubtractQuantity {
+
+        @Nested
+        @DisplayName("성공하면,")
+        class WhenSuccess {
+
+            @Test
+            @DisplayName("차감 후 옵션을 반환한다.")
+            void returnsOptionAfterSubtract() {
+                // given
+                final Option option = mock(Option.class);
+                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
+
+                // when
+                final Option result = optionService.subtractQuantity(1L, 3);
+
+                // then
+                assertThat(result).isEqualTo(option);
+                verify(option).subtractQuantity(3);
+            }
+        }
+
+        @Nested
+        @DisplayName("실패하면,")
+        class WhenFailed {
+
+            @Test
+            @DisplayName("옵션이 없으면 예외가 발생한다.")
+            void throwsWhenOptionNotFound() {
+                // given
+                given(optionRepository.findById(99L)).willReturn(Optional.empty());
+
+                // when & then
+                assertThatThrownBy(() -> optionService.subtractQuantity(99L, 1))
+                    .isInstanceOf(NoSuchElementException.class);
+            }
+
+            @Test
+            @DisplayName("재고가 부족하면 예외가 발생한다.")
+            void throwsWhenInsufficientStock() {
+                // given
+                final Option option = mock(Option.class);
+                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
+                willThrow(new IllegalArgumentException("차감할 수량이 현재 재고보다 많습니다."))
+                    .given(option).subtractQuantity(100);
+
+                // when & then
+                assertThatThrownBy(() -> optionService.subtractQuantity(1L, 100))
                     .isInstanceOf(IllegalArgumentException.class);
             }
         }

@@ -4,6 +4,7 @@ import gift.infra.jwt.JwtProvider;
 import gift.member.domain.Member;
 import gift.member.dto.MemberRequest;
 import gift.member.repository.MemberRepository;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,16 @@ public class MemberService {
         final Member member = memberRepository.save(Member.withCredentials(request.email(), request.password()));
 
         return jwtProvider.createToken(member.getEmail());
+    }
+
+    @Transactional
+    public Member deductPoint(final Long memberId, final int amount) {
+        final Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new NoSuchElementException("회원을 찾을 수 없습니다."));
+
+        member.deductPoint(amount);
+
+        return member;
     }
 
     @Transactional(readOnly = true)

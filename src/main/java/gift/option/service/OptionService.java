@@ -52,6 +52,16 @@ public class OptionService {
     }
 
     @Transactional
+    public Option subtractQuantity(final Long optionId, final int quantity) {
+        final Option option = optionRepository.findById(optionId)
+            .orElseThrow(() -> new NoSuchElementException("옵션을 찾을 수 없습니다."));
+
+        option.subtractQuantity(quantity);
+
+        return option;
+    }
+
+    @Transactional
     public void deleteOption(final Long productId, final Long optionId) {
         final List<Option> options = optionRepository.findByProductId(productId);
         if (options.size() <= 1) {

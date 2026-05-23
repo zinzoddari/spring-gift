@@ -1,11 +1,16 @@
 package gift.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import gift.infra.jwt.JwtProvider;
+import java.util.NoSuchElementException;
 import gift.member.domain.Member;
 import gift.member.dto.MemberRequest;
 import gift.member.repository.MemberRepository;
@@ -30,6 +35,61 @@ class MemberServiceTest {
 
     @InjectMocks
     private MemberService memberService;
+
+    @Nested
+    @DisplayName("포인트를 차감할 때,")
+    class DeductPoint {
+
+        @Nested
+        @DisplayName("성공하면,")
+        class WhenSuccess {
+
+            @Test
+            @DisplayName("포인트를 차감하고 회원을 반환한다.")
+            void deductsPointAndReturnsMember() {
+                // given
+                final Member member = mock(Member.class);
+                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+
+                // when
+                final Member result = memberService.deductPoint(1L, 5_000);
+
+                // then
+                assertThat(result).isEqualTo(member);
+                verify(member).deductPoint(5_000);
+            }
+        }
+
+        @Nested
+        @DisplayName("실패하면,")
+        class WhenFailed {
+
+            @Test
+            @DisplayName("회원이 없으면 예외가 발생한다.")
+            void throwsWhenMemberNotFound() {
+                // given
+                given(memberRepository.findById(99L)).willReturn(Optional.empty());
+
+                // when & then
+                assertThatThrownBy(() -> memberService.deductPoint(99L, 5_000))
+                    .isInstanceOf(NoSuchElementException.class);
+            }
+
+            @Test
+            @DisplayName("포인트가 부족하면 예외가 발생한다.")
+            void throwsWhenInsufficientPoint() {
+                // given
+                final Member member = mock(Member.class);
+                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+                willThrow(new IllegalArgumentException("포인트가 부족합니다."))
+                    .given(member).deductPoint(5_000);
+
+                // when & then
+                assertThatThrownBy(() -> memberService.deductPoint(1L, 5_000))
+                    .isInstanceOf(IllegalArgumentException.class);
+            }
+        }
+    }
 
     @Nested
     @DisplayName("회원 가입을 할 때,")

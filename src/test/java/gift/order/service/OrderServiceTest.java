@@ -1,31 +1,19 @@
 package gift.order.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
-import gift.infra.client.kakao.KakaoMessageAdapter;
-import gift.member.domain.Member;
-import gift.member.repository.MemberRepository;
 import gift.option.domain.Option;
-import gift.option.repository.OptionRepository;
 import gift.order.domain.Order;
-import gift.order.dto.OrderRequest;
-import gift.common.dto.PageResponse;
 import gift.order.dto.OrderResponse;
+import gift.common.dto.PageResponse;
 import gift.order.repository.OrderRepository;
-import gift.product.domain.Product;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,30 +31,8 @@ class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
 
-    @Mock
-    private OptionRepository optionRepository;
-
-    @Mock
-    private MemberRepository memberRepository;
-
-    @Mock
-    private KakaoMessageAdapter kakaoMessageAdapter;
-
     @InjectMocks
     private OrderService orderService;
-
-    private Product product() {
-        final Product product = mock(Product.class);
-        given(product.getPrice()).willReturn(10_000);
-        return product;
-    }
-
-    private Option option(final Product product) {
-        final Option option = mock(Option.class);
-        given(option.getId()).willReturn(1L);
-        given(option.getProduct()).willReturn(product);
-        return option;
-    }
 
     private Order order(final Option option) {
         final Order order = mock(Order.class);
@@ -111,127 +77,32 @@ class OrderServiceTest {
     }
 
     @Nested
-    @DisplayName("주문을 생성할 때,")
-    class CreateOrder {
+    @DisplayName("주문을 저장할 때,")
+    class Save {
 
         @Nested
         @DisplayName("성공하면,")
         class WhenSuccess {
 
             @Test
-            @DisplayName("카카오 토큰이 없으면 알림 없이 주문을 생성한다.")
-            void createsOrderWithoutNotification() {
+            @DisplayName("저장된 주문을 반환한다.")
+            void returnsSavedOrder() {
                 // given
-                final Product product = product();
-                final Option option = option(product);
-                final Member member = mock(Member.class);
-                given(member.getKakaoAccessToken()).willReturn(null);
-                final Order order = order(option);
-                final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+                final Option option = mock(Option.class);
+                final Order order = mock(Order.class);
+                given(order.getId()).willReturn(1L);
+                given(order.getQuantity()).willReturn(2);
                 given(orderRepository.save(any(Order.class))).willReturn(order);
 
                 // when
-                final OrderResponse result = orderService.createOrder(1L, request);
+                final Order result = orderService.save(option, 1L, 2, "선물입니다");
 
                 // then
+                verify(orderRepository).save(any(Order.class));
                 assertSoftly(softly -> {
-                    softly.assertThat(result.id()).isEqualTo(1L);
-                    softly.assertThat(result.optionId()).isEqualTo(1L);
-                    softly.assertThat(result.quantity()).isEqualTo(2);
+                    softly.assertThat(result.getId()).isEqualTo(1L);
+                    softly.assertThat(result.getQuantity()).isEqualTo(2);
                 });
-                verifyNoInteractions(kakaoMessageAdapter);
-            }
-
-            @Test
-            @DisplayName("카카오 토큰이 있으면 주문 생성 후 카카오 알림을 전송한다.")
-            void sendsKakaoNotificationWhenTokenExists() {
-                // given
-                final Product product = product();
-                final Option option = option(product);
-                final Member member = mock(Member.class);
-                given(member.getKakaoAccessToken()).willReturn("kakao-token");
-                final Order order = order(option);
-                final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-                given(orderRepository.save(any(Order.class))).willReturn(order);
-
-                // when
-                orderService.createOrder(1L, request);
-
-                // then
-                verify(kakaoMessageAdapter).sendToMe("kakao-token", order, product);
-            }
-
-            @Test
-            @DisplayName("카카오 알림 전송이 실패해도 주문은 생성된다.")
-            void succeedsEvenWhenKakaoFails() {
-                // given
-                final Product product = product();
-                final Option option = option(product);
-                final Member member = mock(Member.class);
-                given(member.getKakaoAccessToken()).willReturn("kakao-token");
-                final Order order = order(option);
-                final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-                given(orderRepository.save(any(Order.class))).willReturn(order);
-                willThrow(new RuntimeException("카카오 오류"))
-                    .given(kakaoMessageAdapter).sendToMe(any(), any(), any());
-
-                // when
-                final OrderResponse result = orderService.createOrder(1L, request);
-
-                // then
-                assertThat(result.id()).isEqualTo(1L);
-            }
-        }
-
-        @Nested
-        @DisplayName("실패하면,")
-        class WhenFailed {
-
-            @Test
-            @DisplayName("옵션이 없으면 예외가 발생한다.")
-            void throwsWhenOptionNotFound() {
-                // given
-                final OrderRequest request = new OrderRequest(99L, 2, "선물입니다");
-                given(optionRepository.findById(99L)).willReturn(Optional.empty());
-
-                // when & then
-                assertThatThrownBy(() -> orderService.createOrder(1L, request))
-                    .isInstanceOf(NoSuchElementException.class);
-            }
-
-            @Test
-            @DisplayName("재고가 부족하면 예외가 발생한다.")
-            void throwsWhenInsufficientStock() {
-                // given
-                final Option option = mock(Option.class);
-                final OrderRequest request = new OrderRequest(1L, 100, "선물입니다");
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                willThrow(new IllegalArgumentException("차감할 수량이 현재 재고보다 많습니다."))
-                    .given(option).subtractQuantity(100);
-
-                // when & then
-                assertThatThrownBy(() -> orderService.createOrder(1L, request))
-                    .isInstanceOf(IllegalArgumentException.class);
-            }
-
-            @Test
-            @DisplayName("회원이 없으면 예외가 발생한다.")
-            void throwsWhenMemberNotFound() {
-                // given
-                final Option option = mock(Option.class);
-                final OrderRequest request = new OrderRequest(1L, 2, "선물입니다");
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                given(memberRepository.findById(1L)).willReturn(Optional.empty());
-
-                // when & then
-                assertThatThrownBy(() -> orderService.createOrder(1L, request))
-                    .isInstanceOf(NoSuchElementException.class);
             }
         }
     }

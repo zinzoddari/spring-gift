@@ -14,7 +14,7 @@ import gift.common.dto.PageResponse;
 import gift.member.domain.Member;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
-import gift.order.service.OrderService;
+import gift.order.service.OrderFacade;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -40,7 +40,7 @@ class OrderControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private OrderService orderService;
+    private OrderFacade orderFacade;
 
     private Member member() {
         final Member member = mock(Member.class);
@@ -66,7 +66,7 @@ class OrderControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(orderService.getOrders(eq(1L), any(Pageable.class)))
+                given(orderFacade.getOrders(eq(1L), any(Pageable.class)))
                     .willReturn(PageResponse.from(new PageImpl<>(List.of(orderResponse()))));
 
                 // when & then
@@ -94,7 +94,7 @@ class OrderControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(orderService.createOrder(eq(1L), any(OrderRequest.class)))
+                given(orderFacade.createOrder(eq(1L), any(OrderRequest.class)))
                     .willReturn(orderResponse());
 
                 // when & then
@@ -120,7 +120,7 @@ class OrderControllerTest {
                 // given
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
-                given(orderService.createOrder(eq(1L), any(OrderRequest.class)))
+                given(orderFacade.createOrder(eq(1L), any(OrderRequest.class)))
                     .willThrow(new NoSuchElementException());
 
                 // when & then
