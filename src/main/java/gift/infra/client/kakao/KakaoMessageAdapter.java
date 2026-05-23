@@ -1,6 +1,6 @@
 package gift.infra.client.kakao;
 
-import gift.order.Order;
+import gift.order.domain.Order;
 import gift.product.domain.Product;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

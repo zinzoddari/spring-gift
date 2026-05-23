@@ -1,6 +1,6 @@
 package gift.order.dto;
 
-import gift.order.Order;
+import gift.order.domain.Order;
 
 import java.time.LocalDateTime;
 

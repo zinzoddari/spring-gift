@@ -5,7 +5,7 @@ import gift.member.domain.Member;
 import gift.member.repository.MemberRepository;
 import gift.option.domain.Option;
 import gift.option.repository.OptionRepository;
-import gift.order.Order;
+import gift.order.domain.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
 import gift.common.dto.PageResponse;

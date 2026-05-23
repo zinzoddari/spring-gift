@@ -5,7 +5,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import gift.category.Category;
 import gift.option.domain.Option;
-import gift.order.Order;
+import gift.order.domain.Order;
 import gift.product.domain.Product;
 import java.io.IOException;
 import java.net.URLDecoder;
