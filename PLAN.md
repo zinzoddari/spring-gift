@@ -1,7 +1,7 @@
 # PLAN
 
 ## 지금
-- [ ] KakaoAuthFacade 계층 추가 (plan mode 작성됨)
+- [ ] WishController 리팩토링 (WishService 계층 분리, 인증/예외 처리 정리)
 
 ## 다음
 - [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기
@@ -14,6 +14,7 @@
 - [ ] 도메인 클래스 domain 패키지로 이동
 
 ## 완료
+- [x] KakaoAuthFacade 계층 추가 (KakaoAuthService 오케스트레이션/도메인 분리)
 - [x] ProductController 리팩토링 (ProductService 계층 분리, PageResponse<T> DTO, 트랜잭션 경계 추가)
 - [x] PageResponse<T> — Page JSON 구조 완전 일치 (pageable, sort, numberOfElements 포함)
 - [x] MemberController 리팩토링 (MemberService 계층 분리, 글로벌 예외 핸들러 추출, 트랜잭션 경계 추가)
