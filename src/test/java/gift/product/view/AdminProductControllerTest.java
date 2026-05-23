@@ -1,8 +1,8 @@
 package gift.product.view;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,11 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import gift.auth.AuthenticationResolver;
 import gift.category.domain.Category;
-import gift.category.repository.CategoryRepository;
 import gift.product.domain.Product;
-import gift.product.repository.ProductRepository;
+import gift.product.service.AdminProductService;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,10 +36,7 @@ class AdminProductControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private ProductRepository productRepository;
-
-    @MockitoBean
-    private CategoryRepository categoryRepository;
+    private AdminProductService adminProductService;
 
     private Category category() {
         final Category category = mock(Category.class);
@@ -73,7 +69,7 @@ class AdminProductControllerTest {
             void returnsProductListView() throws Exception {
                 // given
                 final Product product = product();
-                given(productRepository.findAll()).willReturn(List.of(product));
+                given(adminProductService.getProducts()).willReturn(List.of(product));
 
                 // when & then
                 mockMvc.perform(get("/admin/products"))
@@ -97,7 +93,7 @@ class AdminProductControllerTest {
             void returnsProductNewView() throws Exception {
                 // given
                 final Category category = category();
-                given(categoryRepository.findAll()).willReturn(List.of(category));
+                given(adminProductService.getCategories()).willReturn(List.of(category));
 
                 // when & then
                 mockMvc.perform(get("/admin/products/new"))
@@ -120,7 +116,7 @@ class AdminProductControllerTest {
             @DisplayName("상품 목록으로 리다이렉트한다.")
             void redirectsToProductList() throws Exception {
                 // given
-                given(categoryRepository.findById(1L)).willReturn(Optional.of(mock(Category.class)));
+                willDoNothing().given(adminProductService).createProduct("상품A", 10_000, "http://img.jpg", 1L);
 
                 // when & then
                 mockMvc.perform(post("/admin/products")
@@ -142,7 +138,7 @@ class AdminProductControllerTest {
             void returnsNewFormWhenNameInvalid() throws Exception {
                 // given
                 final Category category = category();
-                given(categoryRepository.findAll()).willReturn(List.of(category));
+                given(adminProductService.getCategories()).willReturn(List.of(category));
 
                 // when & then
                 mockMvc.perform(post("/admin/products")
@@ -159,7 +155,8 @@ class AdminProductControllerTest {
             @DisplayName("카테고리가 없으면 404를 반환한다.")
             void returnsNotFoundWhenCategoryMissing() throws Exception {
                 // given
-                given(categoryRepository.findById(99L)).willReturn(Optional.empty());
+                willThrow(new NoSuchElementException())
+                    .given(adminProductService).createProduct("상품A", 10_000, "http://img.jpg", 99L);
 
                 // when & then
                 mockMvc.perform(post("/admin/products")
@@ -186,8 +183,8 @@ class AdminProductControllerTest {
                 // given
                 final Product product = product();
                 final Category category = category();
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(categoryRepository.findAll()).willReturn(List.of(category));
+                given(adminProductService.getProduct(1L)).willReturn(product);
+                given(adminProductService.getCategories()).willReturn(List.of(category));
 
                 // when & then
                 mockMvc.perform(get("/admin/products/1/edit"))
@@ -206,7 +203,8 @@ class AdminProductControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductMissing() throws Exception {
                 // given
-                given(productRepository.findById(99L)).willReturn(Optional.empty());
+                given(adminProductService.getProduct(99L))
+                    .willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(get("/admin/products/99/edit"))
@@ -227,8 +225,8 @@ class AdminProductControllerTest {
             @DisplayName("상품 목록으로 리다이렉트한다.")
             void redirectsToProductList() throws Exception {
                 // given
-                given(productRepository.findById(1L)).willReturn(Optional.of(mock(Product.class)));
-                given(categoryRepository.findById(1L)).willReturn(Optional.of(mock(Category.class)));
+                given(adminProductService.getProduct(1L)).willReturn(mock(Product.class));
+                willDoNothing().given(adminProductService).updateProduct(1L, "상품A", 10_000, "http://img.jpg", 1L);
 
                 // when & then
                 mockMvc.perform(post("/admin/products/1/edit")
@@ -251,8 +249,8 @@ class AdminProductControllerTest {
                 // given
                 final Product product = product();
                 final Category category = category();
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(categoryRepository.findAll()).willReturn(List.of(category));
+                given(adminProductService.getProduct(1L)).willReturn(product);
+                given(adminProductService.getCategories()).willReturn(List.of(category));
 
                 // when & then
                 mockMvc.perform(post("/admin/products/1/edit")
@@ -269,7 +267,8 @@ class AdminProductControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductMissing() throws Exception {
                 // given
-                given(productRepository.findById(99L)).willReturn(Optional.empty());
+                given(adminProductService.getProduct(99L))
+                    .willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(post("/admin/products/99/edit")
@@ -294,7 +293,7 @@ class AdminProductControllerTest {
             @DisplayName("상품 목록으로 리다이렉트한다.")
             void redirectsToProductList() throws Exception {
                 // given
-                willDoNothing().given(productRepository).deleteById(1L);
+                willDoNothing().given(adminProductService).deleteProduct(1L);
 
                 // when & then
                 mockMvc.perform(post("/admin/products/1/delete"))
