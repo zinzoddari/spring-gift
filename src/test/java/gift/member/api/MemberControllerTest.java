@@ -6,10 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import gift.infra.jwt.JwtProvider;
-import gift.member.Member;
-import gift.member.repository.MemberRepository;
-import java.util.Optional;
+import gift.member.dto.MemberRequest;
+import gift.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,10 +25,7 @@ class MemberControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private MemberRepository memberRepository;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
+    private MemberService memberService;
 
     @Nested
     @DisplayName("POST /api/members/register 를 호출할 때,")
@@ -44,10 +39,7 @@ class MemberControllerTest {
             @DisplayName("201과 JWT를 반환한다.")
             void returnsCreatedWithToken() throws Exception {
                 // given
-                given(memberRepository.existsByEmail("user@example.com")).willReturn(false);
-                given(memberRepository.save(any(Member.class)))
-                    .willAnswer(invocation -> invocation.getArgument(0));
-                given(jwtProvider.createToken("user@example.com")).willReturn("jwt-token");
+                given(memberService.register(any(MemberRequest.class))).willReturn("jwt-token");
 
                 // when & then
                 mockMvc.perform(post("/api/members/register")
@@ -68,7 +60,8 @@ class MemberControllerTest {
             @DisplayName("이미 등록된 이메일이면 400을 반환한다.")
             void returnsBadRequestWhenEmailAlreadyExists() throws Exception {
                 // given
-                given(memberRepository.existsByEmail("user@example.com")).willReturn(true);
+                given(memberService.register(any(MemberRequest.class)))
+                    .willThrow(new IllegalArgumentException("Email is already registered."));
 
                 // when & then
                 mockMvc.perform(post("/api/members/register")
@@ -105,9 +98,7 @@ class MemberControllerTest {
             @DisplayName("200과 JWT를 반환한다.")
             void returnsOkWithToken() throws Exception {
                 // given
-                final Member member = new Member("user@example.com", "password123");
-                given(memberRepository.findByEmail("user@example.com")).willReturn(Optional.of(member));
-                given(jwtProvider.createToken("user@example.com")).willReturn("jwt-token");
+                given(memberService.login(any(MemberRequest.class))).willReturn("jwt-token");
 
                 // when & then
                 mockMvc.perform(post("/api/members/login")
@@ -128,7 +119,8 @@ class MemberControllerTest {
             @DisplayName("존재하지 않는 이메일이면 400을 반환한다.")
             void returnsBadRequestWhenEmailNotFound() throws Exception {
                 // given
-                given(memberRepository.findByEmail("unknown@example.com")).willReturn(Optional.empty());
+                given(memberService.login(any(MemberRequest.class)))
+                    .willThrow(new IllegalArgumentException("Invalid email or password."));
 
                 // when & then
                 mockMvc.perform(post("/api/members/login")
@@ -143,8 +135,8 @@ class MemberControllerTest {
             @DisplayName("비밀번호가 틀리면 400을 반환한다.")
             void returnsBadRequestWhenWrongPassword() throws Exception {
                 // given
-                final Member member = new Member("user@example.com", "correct-password");
-                given(memberRepository.findByEmail("user@example.com")).willReturn(Optional.of(member));
+                given(memberService.login(any(MemberRequest.class)))
+                    .willThrow(new IllegalArgumentException("Invalid email or password."));
 
                 // when & then
                 mockMvc.perform(post("/api/members/login")

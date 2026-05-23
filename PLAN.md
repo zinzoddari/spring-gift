@@ -1,8 +1,7 @@
 # PLAN
 
 ## 지금
-- [x] JwtProvider 리팩토링
-- [ ] MemberController 리팩토링
+- [ ] ProductController 리팩토링
 
 ## 다음
 - [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기
@@ -15,6 +14,9 @@
 - [ ] 도메인 클래스 domain 패키지로 이동
 
 ## 완료
+- [x] MemberController 리팩토링 (MemberService 계층 분리, 글로벌 예외 핸들러 추출, 트랜잭션 경계 추가)
+- [x] Member 팩토리 메서드 추가 (withEmail, withCredentials), matchesPassword() 도입
+- [x] GlobalExceptionHandler gift.infra.exception으로 분리 (ADR-006)
 - [x] JwtProvider gift.infra.jwt 패키지로 이동, @Autowired 제거
 - [x] KakaoAuthController 리팩토링 (KakaoAuthFacade + KakaoAuthService 계층 분리)
 - [x] KakaoMessageClient → KakaoMessageAdapter 이름 변경 및 KakaoClient 의존으로 리팩토링

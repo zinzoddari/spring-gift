@@ -1,4 +1,4 @@
-package gift.member;
+package gift.member.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +35,18 @@ public class Member {
 
     public Member(String email) {
         this.email = email;
+    }
+
+    public static Member withEmail(final String email) {
+        return new Member(email);
+    }
+
+    public static Member withCredentials(final String email, final String password) {
+        return new Member(email, password);
+    }
+
+    public boolean matchesPassword(String password) {
+        return this.password != null && this.password.equals(password);
     }
 
     public void update(String email, String password) {

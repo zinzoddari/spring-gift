@@ -1,7 +1,7 @@
 package gift.auth;
 
 import gift.infra.jwt.JwtProvider;
-import gift.member.Member;
+import gift.member.domain.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.stereotype.Component;
 

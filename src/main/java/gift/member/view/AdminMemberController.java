@@ -1,6 +1,6 @@
 package gift.member.view;
 
-import gift.member.Member;
+import gift.member.domain.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

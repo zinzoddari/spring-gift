@@ -4,7 +4,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import gift.member.Member;
+import gift.member.domain.Member;
 
 import gift.infra.kakao.KakaoLoginAdapter;
 import gift.infra.kakao.KakaoLoginProperties;

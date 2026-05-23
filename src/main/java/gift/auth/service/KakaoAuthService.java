@@ -2,7 +2,7 @@ package gift.auth.service;
 
 import gift.infra.kakao.KakaoLoginAdapter;
 import gift.infra.kakao.KakaoLoginProperties;
-import gift.member.Member;
+import gift.member.domain.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,7 @@ public class KakaoAuthService {
         final KakaoLoginAdapter.KakaoUserResponse kakaoUser = kakaoLoginAdapter.requestUserInfo(kakaoToken.accessToken());
 
         Member member = memberRepository.findByEmail(kakaoUser.email())
-            .orElseGet(() -> new Member(kakaoUser.email()));
+            .orElseGet(() -> Member.withEmail(kakaoUser.email()));
         member.applyKakaoToken(kakaoToken.accessToken());
 
         memberRepository.save(member);
