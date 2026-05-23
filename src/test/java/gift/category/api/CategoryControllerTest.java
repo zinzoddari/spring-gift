@@ -1,9 +1,10 @@
 package gift.category.api;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,10 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gift.auth.AuthenticationResolver;
-import gift.category.Category;
-import gift.category.repository.CategoryRepository;
+import gift.category.dto.CategoryRequest;
+import gift.category.dto.CategoryResponse;
+import gift.category.service.CategoryService;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,16 +39,10 @@ class CategoryControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
-    private Category category() {
-        final Category category = mock(Category.class);
-        given(category.getId()).willReturn(1L);
-        given(category.getName()).willReturn("카테고리A");
-        given(category.getColor()).willReturn("#FF0000");
-        given(category.getImageUrl()).willReturn("http://img.jpg");
-        given(category.getDescription()).willReturn("설명");
-        return category;
+    private CategoryResponse categoryResponse() {
+        return new CategoryResponse(1L, "카테고리A", "#FF0000", "http://img.jpg", "설명");
     }
 
     @Nested
@@ -61,8 +57,7 @@ class CategoryControllerTest {
             @DisplayName("카테고리 목록을 반환한다.")
             void returnsCategoryList() throws Exception {
                 // given
-                final Category category = category();
-                given(categoryRepository.findAll()).willReturn(List.of(category));
+                given(categoryService.getCategories()).willReturn(List.of(categoryResponse()));
 
                 // when & then
                 mockMvc.perform(get("/api/categories"))
@@ -86,8 +81,7 @@ class CategoryControllerTest {
             @DisplayName("201과 생성된 카테고리를 반환한다.")
             void returnsCreated() throws Exception {
                 // given
-                final Category category = category();
-                given(categoryRepository.save(any(Category.class))).willReturn(category);
+                given(categoryService.createCategory(any(CategoryRequest.class))).willReturn(categoryResponse());
 
                 // when & then
                 mockMvc.perform(post("/api/categories")
@@ -152,9 +146,7 @@ class CategoryControllerTest {
             @DisplayName("수정된 카테고리를 반환한다.")
             void returnsUpdatedCategory() throws Exception {
                 // given
-                final Category category = category();
-                given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
-                given(categoryRepository.save(category)).willReturn(category);
+                given(categoryService.updateCategory(eq(1L), any(CategoryRequest.class))).willReturn(categoryResponse());
 
                 // when & then
                 mockMvc.perform(put("/api/categories/1")
@@ -176,7 +168,8 @@ class CategoryControllerTest {
             @DisplayName("카테고리가 없으면 404를 반환한다.")
             void returnsNotFoundWhenCategoryMissing() throws Exception {
                 // given
-                given(categoryRepository.findById(99L)).willReturn(Optional.empty());
+                willThrow(new NoSuchElementException())
+                    .given(categoryService).updateCategory(eq(99L), any(CategoryRequest.class));
 
                 // when & then
                 mockMvc.perform(put("/api/categories/99")
@@ -201,7 +194,7 @@ class CategoryControllerTest {
             @DisplayName("204를 반환한다.")
             void returnsNoContent() throws Exception {
                 // given
-                willDoNothing().given(categoryRepository).deleteById(1L);
+                willDoNothing().given(categoryService).deleteCategory(1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/categories/1"))

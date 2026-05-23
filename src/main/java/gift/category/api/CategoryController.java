@@ -1,10 +1,11 @@
 package gift.category.api;
 
-import gift.category.Category;
 import gift.category.dto.CategoryRequest;
 import gift.category.dto.CategoryResponse;
-import gift.category.repository.CategoryRepository;
+import gift.category.service.CategoryService;
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,51 +16,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/categories")
-public class CategoryController {
-    private final CategoryRepository categoryRepository;
+class CategoryController {
 
-    public CategoryController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    private final CategoryService categoryService;
+
+    public CategoryController(final CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getCategories() {
-        List<CategoryResponse> categories = categoryRepository.findAll().stream()
-            .map(CategoryResponse::from)
-            .toList();
-        return ResponseEntity.ok(categories);
+    public List<CategoryResponse> getCategories() {
+        return categoryService.getCategories();
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
-        Category saved = categoryRepository.save(request.toEntity());
-        return ResponseEntity.created(URI.create("/api/categories/" + saved.getId()))
-            .body(CategoryResponse.from(saved));
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody final CategoryRequest request) {
+        final CategoryResponse response = categoryService.createCategory(request);
+        return ResponseEntity.created(URI.create("/api/categories/" + response.id()))
+            .body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponse> updateCategory(
-        @PathVariable Long id,
-        @Valid @RequestBody CategoryRequest request
+    public CategoryResponse updateCategory(
+        @PathVariable final Long id,
+        @Valid @RequestBody final CategoryRequest request
     ) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        if (category == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        category.update(request.name(), request.color(), request.imageUrl(), request.description());
-        categoryRepository.save(category);
-        return ResponseEntity.ok(CategoryResponse.from(category));
+        return categoryService.updateCategory(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        categoryRepository.deleteById(id);
+    public ResponseEntity<Void> deleteCategory(@PathVariable final Long id) {
+        categoryService.deleteCategory(id);
+
         return ResponseEntity.noContent().build();
     }
 }
