@@ -2,7 +2,7 @@
 
 ## 지금
 - [ ] KakaoMessageAdapter 작성 및 테스트
-- [x] KakaoAuthController 리팩토링 (KakaoAuthService 추출)
+- [x] KakaoAuthController 리팩토링 (KakaoAuthFacade + KakaoAuthService 계층 분리)
 
 ## 다음
 - [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기

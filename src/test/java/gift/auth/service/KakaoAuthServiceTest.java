@@ -3,9 +3,7 @@ package gift.auth.service;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
-import gift.auth.JwtProvider;
 import gift.infra.kakao.KakaoLoginAdapter;
 import gift.infra.kakao.KakaoLoginProperties;
 import gift.member.Member;
@@ -32,9 +30,6 @@ class KakaoAuthServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
-
-    @Mock
-    private JwtProvider jwtProvider;
 
     @InjectMocks
     private KakaoAuthService kakaoAuthService;
@@ -79,8 +74,8 @@ class KakaoAuthServiceTest {
             given(kakaoLoginAdapter.requestUserInfo("kakao-token"))
                 .willReturn(new KakaoLoginAdapter.KakaoUserResponse(
                     new KakaoLoginAdapter.KakaoUserResponse.KakaoAccount("user@kakao.com")));
-            given(jwtProvider.createToken("user@kakao.com"))
-                .willReturn("service-jwt");
+            given(memberRepository.save(any(Member.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
         }
 
         @Nested
@@ -88,21 +83,19 @@ class KakaoAuthServiceTest {
         class WhenNewMember {
 
             @Test
-            @DisplayName("회원을 등록하고 JWT를 반환한다.")
-            void registersAndReturnsJwt() {
+            @DisplayName("회원을 등록하고 반환한다.")
+            void registersAndReturns() {
                 // given
                 given(memberRepository.findByEmail("user@kakao.com"))
                     .willReturn(Optional.empty());
-                given(memberRepository.save(any(Member.class)))
-                    .willAnswer(invocation -> invocation.getArgument(0));
 
                 // when
-                final String jwt = kakaoAuthService.login("auth-code");
+                final Member member = kakaoAuthService.login("auth-code");
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(jwt).isEqualTo("service-jwt");
-                    then(memberRepository).should().save(any(Member.class));
+                    softly.assertThat(member.getEmail()).isEqualTo("user@kakao.com");
+                    softly.assertThat(member.getKakaoAccessToken()).isEqualTo("kakao-token");
                 });
             }
         }
@@ -112,22 +105,20 @@ class KakaoAuthServiceTest {
         class WhenExistingMember {
 
             @Test
-            @DisplayName("카카오 토큰을 갱신하고 JWT를 반환한다.")
-            void updatesTokenAndReturnsJwt() {
+            @DisplayName("카카오 토큰을 갱신하고 반환한다.")
+            void updatesTokenAndReturns() {
                 // given
                 final Member existing = new Member("user@kakao.com");
                 given(memberRepository.findByEmail("user@kakao.com"))
                     .willReturn(Optional.of(existing));
-                given(memberRepository.save(any(Member.class)))
-                    .willAnswer(invocation -> invocation.getArgument(0));
 
                 // when
-                final String jwt = kakaoAuthService.login("auth-code");
+                final Member member = kakaoAuthService.login("auth-code");
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(jwt).isEqualTo("service-jwt");
-                    softly.assertThat(existing.getKakaoAccessToken()).isEqualTo("kakao-token");
+                    softly.assertThat(member).isSameAs(existing);
+                    softly.assertThat(member.getKakaoAccessToken()).isEqualTo("kakao-token");
                 });
             }
         }

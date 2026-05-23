@@ -46,6 +46,15 @@
 - 요청: RestClient 자체 역직렬화 기능 활용
 - 결과: `ObjectMapper` 및 `deserialize()` 완전 제거, `TypeReference` → `ParameterizedTypeReference`로 교체해 RestClient가 직접 역직렬화
 
+### 작업: KakaoAuthFacade 계층 추가
+- 요청: KakaoAuthService에 혼재된 Adapter/Repository/JwtProvider 의존 분리
+- 결과:
+    - `KakaoAuthFacade`: 오케스트레이션 담당 — KakaoLoginAdapter + KakaoAuthService + JwtProvider + KakaoLoginProperties 조합, `loginUrl()` / `login(code)` 제공
+    - `KakaoAuthService`: 회원 도메인만 — `findOrRegister(email, kakaoToken)`, MemberRepository만 의존
+    - `KakaoAuthController`: KakaoAuthFacade 주입으로 교체
+    - `KakaoAuthFacadeTest` (신규), `KakaoAuthServiceTest` (단순화), `KakaoAuthControllerTest` (Facade mock으로 교체)
+- 근거: 오케스트레이션과 도메인 로직 분리
+
 ### 작업: KakaoAuthController 서비스 계층 추출 및 테스트
 - 요청: KakaoAuthController 비즈니스 로직을 KakaoAuthService로 분리, 테스트 작성
 - 결과:
