@@ -1,6 +1,6 @@
 package gift.member.api;
 
-import gift.auth.JwtProvider;
+import gift.infra.jwt.JwtProvider;
 import gift.auth.dto.TokenResponse;
 import gift.member.Member;
 import gift.member.dto.MemberRequest;

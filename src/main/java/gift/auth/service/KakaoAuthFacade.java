@@ -1,6 +1,6 @@
 package gift.auth.service;
 
-import gift.auth.JwtProvider;
+import gift.infra.jwt.JwtProvider;
 import org.springframework.stereotype.Service;
 
 @Service
