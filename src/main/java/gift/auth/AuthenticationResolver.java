@@ -16,12 +16,12 @@ public class AuthenticationResolver {
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
 
-    public AuthenticationResolver(JwtProvider jwtProvider, MemberRepository memberRepository) {
+    public AuthenticationResolver(final JwtProvider jwtProvider, final MemberRepository memberRepository) {
         this.jwtProvider = jwtProvider;
         this.memberRepository = memberRepository;
     }
 
-    public Member extractMember(String authorization) {
+    public Member extractMember(final String authorization) {
         try {
             final String token = authorization.replace("Bearer ", "");
             final String email = jwtProvider.getEmail(token);
