@@ -1,6 +1,6 @@
 package gift.order;
 
-import gift.option.Option;
+import gift.option.domain.Option;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

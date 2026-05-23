@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import gift.option.Option;
+import gift.option.domain.Option;
 import gift.option.dto.OptionRequest;
 import gift.option.dto.OptionResponse;
 import gift.option.repository.OptionRepository;

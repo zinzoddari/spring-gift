@@ -9,7 +9,7 @@ import gift.member.domain.Member;
 import gift.member.dto.MemberInfo;
 import gift.member.repository.MemberRepository;
 import java.util.NoSuchElementException;
-import gift.option.Option;
+import gift.option.domain.Option;
 import gift.option.repository.OptionRepository;
 import gift.wish.repository.WishRepository;
 import jakarta.validation.Valid;

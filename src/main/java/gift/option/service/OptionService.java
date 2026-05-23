@@ -1,6 +1,6 @@
 package gift.option.service;
 
-import gift.option.Option;
+import gift.option.domain.Option;
 import gift.option.OptionNameValidator;
 import gift.option.dto.OptionRequest;
 import gift.option.dto.OptionResponse;
