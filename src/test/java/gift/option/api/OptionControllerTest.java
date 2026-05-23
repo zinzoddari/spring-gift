@@ -4,7 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,13 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gift.auth.AuthenticationResolver;
-import gift.option.Option;
 import gift.option.dto.OptionRequest;
-import gift.option.repository.OptionRepository;
-import gift.product.domain.Product;
-import gift.product.repository.ProductRepository;
+import gift.option.dto.OptionResponse;
+import gift.option.service.OptionService;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,25 +37,7 @@ class OptionControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private OptionRepository optionRepository;
-
-    @MockitoBean
-    private ProductRepository productRepository;
-
-    private Product product() {
-        final Product product = mock(Product.class);
-        given(product.getId()).willReturn(1L);
-        return product;
-    }
-
-    private Option option(final Product product) {
-        final Option option = mock(Option.class);
-        given(option.getId()).willReturn(1L);
-        given(option.getName()).willReturn("옵션A");
-        given(option.getQuantity()).willReturn(10);
-        given(option.getProduct()).willReturn(product);
-        return option;
-    }
+    private OptionService optionService;
 
     @Nested
     @DisplayName("옵션 목록을 조회할 때,")
@@ -71,14 +51,10 @@ class OptionControllerTest {
             @DisplayName("상품의 옵션 여러 개를 반환한다.")
             void returnsOptionList() throws Exception {
                 // given
-                final Product product = product();
-                final Option optionA = option(product);
-                final Option optionB = mock(Option.class);
-                given(optionB.getId()).willReturn(2L);
-                given(optionB.getName()).willReturn("옵션B");
-                given(optionB.getQuantity()).willReturn(5);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(optionRepository.findByProductId(1L)).willReturn(List.of(optionA, optionB));
+                given(optionService.getOptions(1L)).willReturn(List.of(
+                    new OptionResponse(1L, "옵션A", 10),
+                    new OptionResponse(2L, "옵션B", 5)
+                ));
 
                 // when & then
                 mockMvc.perform(get("/api/products/1/options"))
@@ -97,7 +73,7 @@ class OptionControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductNotFound() throws Exception {
                 // given
-                given(productRepository.findById(99L)).willReturn(Optional.empty());
+                given(optionService.getOptions(99L)).willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(get("/api/products/99/options"))
@@ -118,11 +94,8 @@ class OptionControllerTest {
             @DisplayName("생성된 옵션과 201을 반환한다.")
             void returnsCreatedOption() throws Exception {
                 // given
-                final Product product = product();
-                final Option option = option(product);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(optionRepository.existsByProductIdAndName(1L, "옵션A")).willReturn(false);
-                given(optionRepository.save(any(Option.class))).willReturn(option);
+                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                    .willReturn(new OptionResponse(1L, "옵션A", 10));
 
                 // when & then
                 mockMvc.perform(post("/api/products/1/options")
@@ -144,7 +117,8 @@ class OptionControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductNotFound() throws Exception {
                 // given
-                given(productRepository.findById(1L)).willReturn(Optional.empty());
+                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                    .willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(post("/api/products/1/options")
@@ -159,9 +133,8 @@ class OptionControllerTest {
             @DisplayName("이미 존재하는 옵션명이면 400을 반환한다.")
             void returnsBadRequestWhenDuplicateName() throws Exception {
                 // given
-                final Product product = product();
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(optionRepository.existsByProductIdAndName(1L, "옵션A")).willReturn(true);
+                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                    .willThrow(new IllegalArgumentException("이미 존재하는 옵션명입니다."));
 
                 // when & then
                 mockMvc.perform(post("/api/products/1/options")
@@ -175,6 +148,10 @@ class OptionControllerTest {
             @Test
             @DisplayName("허용되지 않는 특수문자가 포함된 이름이면 400을 반환한다.")
             void returnsBadRequestWhenInvalidName() throws Exception {
+                // given
+                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                    .willThrow(new IllegalArgumentException("허용되지 않는 특수문자가 포함되어 있습니다."));
+
                 // when & then
                 mockMvc.perform(post("/api/products/1/options")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -198,13 +175,7 @@ class OptionControllerTest {
             @DisplayName("옵션을 삭제하고 204를 반환한다.")
             void returnsNoContent() throws Exception {
                 // given
-                final Product product = product();
-                final Option option = option(product);
-                final Option otherOption = mock(Option.class);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(optionRepository.findByProductId(1L)).willReturn(List.of(option, otherOption));
-                given(optionRepository.findById(1L)).willReturn(Optional.of(option));
-                willDoNothing().given(optionRepository).delete(option);
+                willDoNothing().given(optionService).deleteOption(1L, 1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/1"))
@@ -220,7 +191,7 @@ class OptionControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductNotFound() throws Exception {
                 // given
-                given(productRepository.findById(1L)).willReturn(Optional.empty());
+                willThrow(new NoSuchElementException()).given(optionService).deleteOption(1L, 1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/1"))
@@ -231,10 +202,8 @@ class OptionControllerTest {
             @DisplayName("옵션이 1개뿐이면 400을 반환한다.")
             void returnsBadRequestWhenLastOption() throws Exception {
                 // given
-                final Product product = product();
-                final Option option = option(product);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(optionRepository.findByProductId(1L)).willReturn(List.of(option));
+                willThrow(new IllegalArgumentException("옵션이 1개인 상품은 옵션을 삭제할 수 없습니다."))
+                    .given(optionService).deleteOption(1L, 1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/1"))
@@ -245,11 +214,7 @@ class OptionControllerTest {
             @DisplayName("옵션이 없으면 404를 반환한다.")
             void returnsNotFoundWhenOptionNotFound() throws Exception {
                 // given
-                final Product product = product();
-                final Option otherOption = mock(Option.class);
-                given(productRepository.findById(1L)).willReturn(Optional.of(product));
-                given(optionRepository.findByProductId(1L)).willReturn(List.of(otherOption, mock(Option.class)));
-                given(optionRepository.findById(99L)).willReturn(Optional.empty());
+                willThrow(new NoSuchElementException()).given(optionService).deleteOption(1L, 99L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/99"))
