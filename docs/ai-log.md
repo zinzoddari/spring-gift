@@ -26,6 +26,17 @@
 
 ---
 
+## 2026-05-23
+
+### 작업: KakaoLoginClient → KakaoClient 리팩토링
+- 요청: KakaoLoginClient가 RestClient를 직접 사용하던 것을 KakaoClient 래퍼로 교체
+- 결과:
+    - `KakaoLoginClient`: 생성자를 `RestClient.Builder` → `KakaoClient`로 변경, `requestAccessToken`/`requestUserInfo` 내부 RestClient 호출을 `kakaoClient.post()` / `kakaoClient.get()`으로 교체
+    - `KakaoLoginClientTest`: setUp에서 `KakaoClient(RestClient.builder(), new ObjectMapper())`를 직접 생성해 주입
+- 근거: KakaoClient HTTP 래퍼를 통해 직렬화/역직렬화 정책 일원화. KakaoLoginAdapter 전환 전 중간 단계
+
+---
+
 ## 2026-05-11
 
 ### 작업: ADR 템플릿 작성

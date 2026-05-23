@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -35,7 +36,7 @@ class KakaoLoginClientTest {
             baseUrl
         );
 
-        kakaoLoginClient = new KakaoLoginClient(properties, RestClient.builder());
+        kakaoLoginClient = new KakaoLoginClient(properties, new KakaoClient(RestClient.builder(), new ObjectMapper()));
     }
 
     @AfterEach

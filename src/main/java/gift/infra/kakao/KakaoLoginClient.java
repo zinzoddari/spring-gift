@@ -2,18 +2,18 @@ package gift.infra.kakao;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestClient;
 
 @Component
 public class KakaoLoginClient {
     private final KakaoLoginProperties properties;
-    private final RestClient restClient;
+    private final KakaoClient kakaoClient;
 
-    public KakaoLoginClient(KakaoLoginProperties properties, RestClient.Builder builder) {
+    public KakaoLoginClient(final KakaoLoginProperties properties, final KakaoClient kakaoClient) {
         this.properties = properties;
-        this.restClient = builder.build();
+        this.kakaoClient = kakaoClient;
     }
 
     public KakaoTokenResponse requestAccessToken(String code) {
@@ -24,20 +24,19 @@ public class KakaoLoginClient {
         params.add("code", code);
         params.add("client_secret", properties.clientSecret());
 
-        return restClient.post()
-            .uri(properties.authBaseUrl() + "/oauth/token")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .body(params)
-            .retrieve()
-            .body(KakaoTokenResponse.class);
+        return kakaoClient.post(
+            properties.authBaseUrl() + "/oauth/token",
+            params,
+            new TypeReference<>() {}
+        );
     }
 
     public KakaoUserResponse requestUserInfo(String accessToken) {
-        return restClient.get()
-            .uri(properties.apiBaseUrl() + "/v2/user/me")
-            .header("Authorization", "Bearer " + accessToken)
-            .retrieve()
-            .body(KakaoUserResponse.class);
+        return kakaoClient.get(
+            properties.apiBaseUrl() + "/v2/user/me",
+            accessToken,
+            new TypeReference<>() {}
+        );
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

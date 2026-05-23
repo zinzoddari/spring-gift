@@ -17,6 +17,7 @@
 - [ ] 도메인 클래스 doamin 패키지로 이동하기
 
 ## 완료
+- [x] KakaoLoginClient → KakaoClient 의존으로 리팩토링
 - [x] ADR 템플릿 작성
 - [x] ARCHITECTURE.md 작성
 - [x] ADR-001 패키지 구조 결정
