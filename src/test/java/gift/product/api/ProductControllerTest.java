@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import gift.category.Category;
 import gift.category.repository.CategoryRepository;
-import gift.product.Product;
+import gift.product.domain.Product;
 import gift.product.repository.ProductRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;

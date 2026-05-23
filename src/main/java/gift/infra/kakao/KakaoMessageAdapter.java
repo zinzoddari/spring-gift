@@ -1,7 +1,7 @@
 package gift.infra.kakao;
 
 import gift.order.Order;
-import gift.product.Product;
+import gift.product.domain.Product;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;

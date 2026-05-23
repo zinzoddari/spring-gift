@@ -5,7 +5,7 @@ import gift.option.OptionNameValidator;
 import gift.option.dto.OptionRequest;
 import gift.option.dto.OptionResponse;
 import gift.option.repository.OptionRepository;
-import gift.product.Product;
+import gift.product.domain.Product;
 import gift.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

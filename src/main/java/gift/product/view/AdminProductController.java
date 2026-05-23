@@ -2,7 +2,7 @@ package gift.product.view;
 
 import gift.category.Category;
 import gift.category.repository.CategoryRepository;
-import gift.product.Product;
+import gift.product.domain.Product;
 import gift.product.ProductNameValidator;
 import gift.product.repository.ProductRepository;
 import org.springframework.stereotype.Controller;

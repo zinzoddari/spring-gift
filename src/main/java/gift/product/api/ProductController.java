@@ -2,7 +2,7 @@ package gift.product.api;
 
 import gift.category.Category;
 import gift.category.repository.CategoryRepository;
-import gift.product.Product;
+import gift.product.domain.Product;
 import gift.product.ProductNameValidator;
 import gift.product.dto.ProductRequest;
 import gift.product.dto.ProductResponse;
