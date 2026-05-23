@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gift.common.dto.PageResponse;
 import gift.product.dto.ProductRequest;
 import gift.product.dto.ProductResponse;
 import gift.product.service.ProductService;
@@ -55,7 +56,7 @@ class ProductControllerTest {
             void returnsProductPage() throws Exception {
                 // given
                 given(productService.getProducts(any(Pageable.class)))
-                    .willReturn(new PageImpl<>(List.of(productResponse())));
+                    .willReturn(PageResponse.from(new PageImpl<>(List.of(productResponse()))));
 
                 // when & then
                 mockMvc.perform(get("/api/products"))

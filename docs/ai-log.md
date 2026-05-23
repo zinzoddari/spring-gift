@@ -88,6 +88,24 @@
     - `OrderController` import 수정
     - 테스트: `new KakaoClient(RestClient.builder().baseUrl(baseUrl).build())` 패턴으로 업데이트
 
+### 작업: ProductController 리팩토링 (ProductService 계층 분리)
+- 요청: ProductController 비즈니스 로직을 ProductService로 분리, 테스트 코드 작성
+- 결과:
+    - `ProductService`: `getProducts(Pageable)` / `getProduct(id)` / `createProduct(request)` / `updateProduct(id, request)` / `deleteProduct(id)` — `@Transactional(readOnly = true)` / `@Transactional` 경계 적용
+    - `ProductController`: ProductService만 의존, HTTP 레이어만 담당
+    - `ProductServiceTest`: `@ExtendWith(MockitoExtension)` 순수 단위 테스트
+    - `ProductControllerTest`: `@WebMvcTest` + `@MockitoBean(ProductService)`, 전 CRUD 케이스
+- 근거: 서비스 계층 분리, 트랜잭션 경계 명확화
+
+### 작업: PageResponse<T> — Page JSON 구조 완전 일치
+- 요청: `ProductService.getProducts()`가 `Page<ProductResponse>` 대신 DTO 반환, Spring의 Page JSON과 완전 동일하게
+- 결과:
+    - `gift.common.dto.PageResponse<T>`: `content`, `pageable`(PageableResponse), `totalElements`, `totalPages`, `number`, `size`, `numberOfElements`, `sort`(SortResponse), `first`, `last`, `empty` 11개 필드 — Spring `Page` Jackson 직렬화와 동일한 구조
+    - `PageableResponse`: `pageNumber`, `pageSize`, `offset`, `sort`, `paged`, `unpaged` — `isUnpaged()` 케이스(offset 등 UnsupportedOperationException) 방어 처리
+    - `SortResponse`: `empty`, `sorted`, `unsorted`
+    - `PageResponse.from(Page<T>)` 정적 팩토리 메서드
+- 근거: 서비스 레이어에서 Spring 타입 노출 방지, 클라이언트 응답 형식 변경 없이 DTO로 교체
+
 ### 작업: KakaoLoginClient → KakaoClient 리팩토링
 - 요청: KakaoLoginClient가 RestClient를 직접 사용하던 것을 KakaoClient 래퍼로 교체
 - 결과:

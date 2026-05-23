@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import gift.category.Category;
 import gift.category.repository.CategoryRepository;
+import gift.common.dto.PageResponse;
 import gift.product.domain.Product;
 import gift.product.dto.ProductRequest;
 import gift.product.dto.ProductResponse;
@@ -66,12 +67,12 @@ class ProductServiceTest {
                     .willReturn(new PageImpl<>(List.of(product)));
 
                 // when
-                final var result = productService.getProducts(Pageable.unpaged());
+                final PageResponse<ProductResponse> result = productService.getProducts(Pageable.unpaged());
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(result.getContent()).hasSize(1);
-                    softly.assertThat(result.getContent().get(0).name()).isEqualTo("상품A");
+                    softly.assertThat(result.content()).hasSize(1);
+                    softly.assertThat(result.content().get(0).name()).isEqualTo("상품A");
                 });
             }
         }

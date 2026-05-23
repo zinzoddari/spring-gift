@@ -7,9 +7,9 @@ import gift.product.domain.Product;
 import gift.product.dto.ProductRequest;
 import gift.product.dto.ProductResponse;
 import gift.product.repository.ProductRepository;
+import gift.common.dto.PageResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,20 +25,19 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductResponse> getProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(ProductResponse::from);
+    public PageResponse<ProductResponse> getProducts(final Pageable pageable) {
+        return PageResponse.from(productRepository.findAll(pageable).map(ProductResponse::from));
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse getProduct(Long id) {
+    public ProductResponse getProduct(final Long id) {
         final Product product = productRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
         return ProductResponse.from(product);
     }
 
     @Transactional
-    public ProductResponse createProduct(ProductRequest request) {
+    public ProductResponse createProduct(final ProductRequest request) {
         validateName(request.name());
         final Category category = categoryRepository.findById(request.categoryId())
             .orElseThrow(() -> new NoSuchElementException("카테고리를 찾을 수 없습니다."));
@@ -47,7 +46,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse updateProduct(Long id, ProductRequest request) {
+    public ProductResponse updateProduct(final Long id, final ProductRequest request) {
         validateName(request.name());
         final Category category = categoryRepository.findById(request.categoryId())
             .orElseThrow(() -> new NoSuchElementException("카테고리를 찾을 수 없습니다."));
@@ -58,7 +57,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
+    public void deleteProduct(final Long id) {
         productRepository.deleteById(id);
     }
 
