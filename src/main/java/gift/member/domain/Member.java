@@ -1,9 +1,11 @@
 package gift.member.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Represents a registered member.
@@ -12,17 +14,22 @@ import jakarta.persistence.Id;
  * @since 1.0
  */
 @Entity
+@Table(name = "member")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
+    @Column(name = "password", length = 255)
     private String password;
 
+    @Column(name = "kakao_access_token", length = 512)
     private String kakaoAccessToken;
 
+    @Column(name = "point", nullable = false)
     private int point;
 
     protected Member() {

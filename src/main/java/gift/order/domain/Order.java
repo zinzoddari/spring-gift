@@ -1,6 +1,7 @@
 package gift.order.domain;
 
 import gift.option.domain.Option;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,12 +20,19 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "option_id")
+    @JoinColumn(name = "option_id", nullable = false)
     private Option option;
-    // primitive FK
+
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
+
+    @Column(name = "quantity", nullable = false)
     private int quantity;
+
+    @Column(name = "message", length = 255)
     private String message;
+
+    @Column(name = "order_date_time", nullable = false)
     private LocalDateTime orderDateTime;
 
     protected Order() {
