@@ -109,6 +109,7 @@ class KakaoClientTest {
             void throwsExceptionOn4xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(400));
+
                 // when & then
                 assertThatThrownBy(() -> kakaoClient.post("/test/path", new LinkedMultiValueMap<>(), new ParameterizedTypeReference<TestResponse>() {}))
                     .isInstanceOf(Exception.class);
@@ -119,6 +120,7 @@ class KakaoClientTest {
             void throwsExceptionOn5xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(500));
+
                 // when & then
                 assertThatThrownBy(() -> kakaoClient.post("/test/path", new LinkedMultiValueMap<>(), new ParameterizedTypeReference<TestResponse>() {}))
                     .isInstanceOf(Exception.class);
@@ -165,6 +167,7 @@ class KakaoClientTest {
             void throwsExceptionOn4xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(401));
+
                 // when & then
                 assertThatThrownBy(() -> kakaoClient.postVoid("/talk/memo/send","bad-token", new LinkedMultiValueMap<>()))
                     .isInstanceOf(Exception.class);
@@ -175,6 +178,7 @@ class KakaoClientTest {
             void throwsExceptionOn5xx() {
                 // given
                 mockWebServer.enqueue(new MockResponse().setResponseCode(500));
+
                 // when & then
                 assertThatThrownBy(() -> kakaoClient.postVoid("/talk/memo/send","token", new LinkedMultiValueMap<>()))
                     .isInstanceOf(Exception.class);

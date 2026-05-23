@@ -42,7 +42,7 @@ public class Member {
         this.password = password;
     }
 
-    public void updateKakaoAccessToken(String kakaoAccessToken) {
+    public void applyKakaoToken(String kakaoAccessToken) {
         this.kakaoAccessToken = kakaoAccessToken;
     }
 

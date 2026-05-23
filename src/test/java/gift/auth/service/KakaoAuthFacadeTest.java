@@ -4,7 +4,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import gift.auth.JwtProvider;
-import gift.member.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -64,7 +63,7 @@ class KakaoAuthFacadeTest {
             void returnsJwt() {
                 // given
                 given(kakaoAuthService.login("auth-code"))
-                    .willReturn(new Member("user@kakao.com"));
+                    .willReturn("user@kakao.com");
                 given(jwtProvider.createToken("user@kakao.com"))
                     .willReturn("service-jwt");
 

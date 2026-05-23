@@ -1,7 +1,6 @@
 package gift.auth.service;
 
 import gift.auth.JwtProvider;
-import gift.member.Member;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +21,11 @@ public class KakaoAuthFacade {
         return kakaoAuthService.loginUrl();
     }
 
-    public String login(String code) {
-        final Member member = kakaoAuthService.login(code);
-        return jwtProvider.createToken(member.getEmail());
+    /**
+     * 주어진 인증 코드를 사용하여 Kakao 로그인 프로세스를 수행하고 JWT 토큰을 생성합니다.
+     * KakaoAuthService를 통해 사용자 이메일을 조회한 후, JwtProvider를 이용하여 JWT를 반환합니다.
+     */
+    public String login(final String code) {
+        return jwtProvider.createToken(kakaoAuthService.login(code));
     }
 }

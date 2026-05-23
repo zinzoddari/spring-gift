@@ -5,6 +5,7 @@ import gift.infra.kakao.KakaoLoginProperties;
 import gift.member.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
@@ -14,9 +15,9 @@ public class KakaoAuthService {
     private final MemberRepository memberRepository;
 
     public KakaoAuthService(
-        KakaoLoginProperties properties,
-        KakaoLoginAdapter kakaoLoginAdapter,
-        MemberRepository memberRepository
+        final KakaoLoginProperties properties,
+        final KakaoLoginAdapter kakaoLoginAdapter,
+        final MemberRepository memberRepository
     ) {
         this.properties = properties;
         this.kakaoLoginAdapter = kakaoLoginAdapter;
@@ -33,13 +34,17 @@ public class KakaoAuthService {
             .toUriString();
     }
 
-    public Member login(String code) {
-        KakaoLoginAdapter.KakaoTokenResponse kakaoToken = kakaoLoginAdapter.requestAccessToken(code);
-        KakaoLoginAdapter.KakaoUserResponse kakaoUser = kakaoLoginAdapter.requestUserInfo(kakaoToken.accessToken());
+    @Transactional
+    public String login(final String code) {
+        final KakaoLoginAdapter.KakaoTokenResponse kakaoToken = kakaoLoginAdapter.requestAccessToken(code);
+        final KakaoLoginAdapter.KakaoUserResponse kakaoUser = kakaoLoginAdapter.requestUserInfo(kakaoToken.accessToken());
 
         Member member = memberRepository.findByEmail(kakaoUser.email())
             .orElseGet(() -> new Member(kakaoUser.email()));
-        member.updateKakaoAccessToken(kakaoToken.accessToken());
-        return memberRepository.save(member);
+        member.applyKakaoToken(kakaoToken.accessToken());
+
+        memberRepository.save(member);
+
+        return member.getEmail();
     }
 }

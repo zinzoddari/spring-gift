@@ -4,9 +4,10 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import gift.member.Member;
+
 import gift.infra.kakao.KakaoLoginAdapter;
 import gift.infra.kakao.KakaoLoginProperties;
-import gift.member.Member;
 import gift.member.repository.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,13 +91,10 @@ class KakaoAuthServiceTest {
                     .willReturn(Optional.empty());
 
                 // when
-                final Member member = kakaoAuthService.login("auth-code");
+                final String email = kakaoAuthService.login("auth-code");
 
                 // then
-                assertSoftly(softly -> {
-                    softly.assertThat(member.getEmail()).isEqualTo("user@kakao.com");
-                    softly.assertThat(member.getKakaoAccessToken()).isEqualTo("kakao-token");
-                });
+                assertSoftly(softly -> softly.assertThat(email).isEqualTo("user@kakao.com"));
             }
         }
 
@@ -113,12 +111,12 @@ class KakaoAuthServiceTest {
                     .willReturn(Optional.of(existing));
 
                 // when
-                final Member member = kakaoAuthService.login("auth-code");
+                final String email = kakaoAuthService.login("auth-code");
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(member).isSameAs(existing);
-                    softly.assertThat(member.getKakaoAccessToken()).isEqualTo("kakao-token");
+                    softly.assertThat(email).isEqualTo("user@kakao.com");
+                    softly.assertThat(existing.getKakaoAccessToken()).isEqualTo("kakao-token");
                 });
             }
         }
