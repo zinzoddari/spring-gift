@@ -1,7 +1,8 @@
 # PLAN
 
 ## 지금
-- [ ] JwtProvider 리팩토링
+- [x] JwtProvider 리팩토링
+- [ ] MemberController 리팩토링
 
 ## 다음
 - [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기
@@ -14,6 +15,7 @@
 - [ ] 도메인 클래스 domain 패키지로 이동
 
 ## 완료
+- [x] JwtProvider gift.infra.jwt 패키지로 이동, @Autowired 제거
 - [x] KakaoAuthController 리팩토링 (KakaoAuthFacade + KakaoAuthService 계층 분리)
 - [x] KakaoMessageClient → KakaoMessageAdapter 이름 변경 및 KakaoClient 의존으로 리팩토링
 - [x] Member.updateKakaoAccessToken → applyKakaoToken 이름 변경
