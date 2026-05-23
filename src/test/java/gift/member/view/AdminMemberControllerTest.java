@@ -1,8 +1,8 @@
 package gift.member.view;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,8 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import gift.auth.AuthenticationResolver;
 import gift.member.domain.Member;
-import gift.member.repository.MemberRepository;
-import java.util.Optional;
+import gift.member.service.AdminMemberService;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class AdminMemberControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private MemberRepository memberRepository;
+    private AdminMemberService adminMemberService;
 
     private Member member() {
         final Member member = mock(Member.class);
@@ -47,7 +47,7 @@ class AdminMemberControllerTest {
 
     @Nested
     @DisplayName("회원 목록을 조회할 때,")
-    class List {
+    class MemberList {
 
         @Nested
         @DisplayName("성공하면,")
@@ -58,7 +58,7 @@ class AdminMemberControllerTest {
             void returnsMemberListView() throws Exception {
                 // given
                 final Member member = member();
-                given(memberRepository.findAll()).willReturn(java.util.List.of(member));
+                given(adminMemberService.getMembers()).willReturn(List.of(member));
 
                 // when & then
                 mockMvc.perform(get("/admin/members"))
@@ -99,9 +99,7 @@ class AdminMemberControllerTest {
             @DisplayName("회원 목록으로 리다이렉트한다.")
             void redirectsToMemberList() throws Exception {
                 // given
-                final Member member = member();
-                given(memberRepository.existsByEmail("test@test.com")).willReturn(false);
-                given(memberRepository.save(any(Member.class))).willReturn(member);
+                willDoNothing().given(adminMemberService).createMember("test@test.com", "password");
 
                 // when & then
                 mockMvc.perform(post("/admin/members")
@@ -120,7 +118,8 @@ class AdminMemberControllerTest {
             @DisplayName("이미 등록된 이메일이면 등록 폼으로 돌아간다.")
             void returnsNewFormWhenEmailDuplicated() throws Exception {
                 // given
-                given(memberRepository.existsByEmail("test@test.com")).willReturn(true);
+                willThrow(new IllegalArgumentException("Email is already registered."))
+                    .given(adminMemberService).createMember("test@test.com", "password");
 
                 // when & then
                 mockMvc.perform(post("/admin/members")
@@ -146,7 +145,7 @@ class AdminMemberControllerTest {
             void returnsMemberEditView() throws Exception {
                 // given
                 final Member member = member();
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+                given(adminMemberService.getMember(1L)).willReturn(member);
 
                 // when & then
                 mockMvc.perform(get("/admin/members/1/edit"))
@@ -164,7 +163,8 @@ class AdminMemberControllerTest {
             @DisplayName("회원이 없으면 400을 반환한다.")
             void returnsBadRequestWhenMemberNotFound() throws Exception {
                 // given
-                given(memberRepository.findById(99L)).willReturn(Optional.empty());
+                given(adminMemberService.getMember(99L))
+                    .willThrow(new IllegalArgumentException("Member not found. id=99"));
 
                 // when & then
                 mockMvc.perform(get("/admin/members/99/edit"))
@@ -185,9 +185,7 @@ class AdminMemberControllerTest {
             @DisplayName("회원 목록으로 리다이렉트한다.")
             void redirectsToMemberList() throws Exception {
                 // given
-                final Member member = member();
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-                given(memberRepository.save(member)).willReturn(member);
+                willDoNothing().given(adminMemberService).updateMember(1L, "updated@test.com", "newpassword");
 
                 // when & then
                 mockMvc.perform(post("/admin/members/1/edit")
@@ -206,7 +204,8 @@ class AdminMemberControllerTest {
             @DisplayName("회원이 없으면 400을 반환한다.")
             void returnsBadRequestWhenMemberNotFound() throws Exception {
                 // given
-                given(memberRepository.findById(99L)).willReturn(Optional.empty());
+                willThrow(new IllegalArgumentException("Member not found. id=99"))
+                    .given(adminMemberService).updateMember(99L, "updated@test.com", "newpassword");
 
                 // when & then
                 mockMvc.perform(post("/admin/members/99/edit")
@@ -229,9 +228,7 @@ class AdminMemberControllerTest {
             @DisplayName("회원 목록으로 리다이렉트한다.")
             void redirectsToMemberList() throws Exception {
                 // given
-                final Member member = member();
-                given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-                given(memberRepository.save(member)).willReturn(member);
+                willDoNothing().given(adminMemberService).chargePoint(1L, 5_000);
 
                 // when & then
                 mockMvc.perform(post("/admin/members/1/charge-point")
@@ -249,7 +246,8 @@ class AdminMemberControllerTest {
             @DisplayName("회원이 없으면 400을 반환한다.")
             void returnsBadRequestWhenMemberNotFound() throws Exception {
                 // given
-                given(memberRepository.findById(99L)).willReturn(Optional.empty());
+                willThrow(new IllegalArgumentException("Member not found. id=99"))
+                    .given(adminMemberService).chargePoint(99L, 5_000);
 
                 // when & then
                 mockMvc.perform(post("/admin/members/99/charge-point")
@@ -271,7 +269,7 @@ class AdminMemberControllerTest {
             @DisplayName("회원 목록으로 리다이렉트한다.")
             void redirectsToMemberList() throws Exception {
                 // given
-                willDoNothing().given(memberRepository).deleteById(1L);
+                willDoNothing().given(adminMemberService).deleteMember(1L);
 
                 // when & then
                 mockMvc.perform(post("/admin/members/1/delete"))
