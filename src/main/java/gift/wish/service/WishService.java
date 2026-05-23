@@ -3,7 +3,7 @@ package gift.wish.service;
 import gift.common.dto.PageResponse;
 import gift.product.domain.Product;
 import gift.product.repository.ProductRepository;
-import gift.wish.Wish;
+import gift.wish.domain.Wish;
 import gift.wish.dto.WishAddResult;
 import gift.wish.dto.WishRequest;
 import gift.wish.dto.WishResponse;

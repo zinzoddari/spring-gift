@@ -1,6 +1,6 @@
 package gift.wish.dto;
 
-import gift.wish.Wish;
+import gift.wish.domain.Wish;
 
 public record WishResponse(
     Long id,

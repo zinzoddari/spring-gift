@@ -1,4 +1,4 @@
-package gift.wish;
+package gift.wish.domain;
 
 import gift.product.domain.Product;
 import jakarta.persistence.Entity;
