@@ -8,9 +8,9 @@ import gift.option.repository.OptionRepository;
 import gift.order.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
+import gift.common.dto.PageResponse;
 import gift.order.repository.OrderRepository;
 import java.util.NoSuchElementException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +36,8 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderResponse> getOrders(final Long memberId, final Pageable pageable) {
-        return orderRepository.findByMemberId(memberId, pageable).map(OrderResponse::from);
+    public PageResponse<OrderResponse> getOrders(final Long memberId, final Pageable pageable) {
+        return PageResponse.from(orderRepository.findByMemberId(memberId, pageable).map(OrderResponse::from));
     }
 
     // order flow:

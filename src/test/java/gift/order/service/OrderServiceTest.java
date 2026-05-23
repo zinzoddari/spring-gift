@@ -18,6 +18,7 @@ import gift.option.domain.Option;
 import gift.option.repository.OptionRepository;
 import gift.order.Order;
 import gift.order.dto.OrderRequest;
+import gift.common.dto.PageResponse;
 import gift.order.dto.OrderResponse;
 import gift.order.repository.OrderRepository;
 import gift.product.domain.Product;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -97,14 +97,14 @@ class OrderServiceTest {
                     .willReturn(new PageImpl<>(List.of(order)));
 
                 // when
-                final Page<OrderResponse> result = orderService.getOrders(1L, Pageable.unpaged());
+                final PageResponse<OrderResponse> result = orderService.getOrders(1L, Pageable.unpaged());
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(result.getContent()).hasSize(1);
-                    softly.assertThat(result.getContent().get(0).id()).isEqualTo(1L);
-                    softly.assertThat(result.getContent().get(0).optionId()).isEqualTo(1L);
-                    softly.assertThat(result.getContent().get(0).quantity()).isEqualTo(2);
+                    softly.assertThat(result.content()).hasSize(1);
+                    softly.assertThat(result.content().get(0).id()).isEqualTo(1L);
+                    softly.assertThat(result.content().get(0).optionId()).isEqualTo(1L);
+                    softly.assertThat(result.content().get(0).quantity()).isEqualTo(2);
                 });
             }
         }

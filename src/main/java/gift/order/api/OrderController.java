@@ -1,12 +1,12 @@
 package gift.order.api;
 
+import gift.common.dto.PageResponse;
 import gift.member.dto.MemberInfo;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
 import gift.order.service.OrderService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,7 @@ class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderResponse>> getOrders(
+    public ResponseEntity<PageResponse<OrderResponse>> getOrders(
         final MemberInfo memberInfo,
         final Pageable pageable
     ) {

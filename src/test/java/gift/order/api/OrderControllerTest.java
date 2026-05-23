@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gift.auth.AuthenticationResolver;
+import gift.common.dto.PageResponse;
 import gift.member.domain.Member;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
@@ -66,7 +67,7 @@ class OrderControllerTest {
                 final Member member = member();
                 given(authenticationResolver.extractMember(any())).willReturn(member);
                 given(orderService.getOrders(eq(1L), any(Pageable.class)))
-                    .willReturn(new PageImpl<>(List.of(orderResponse())));
+                    .willReturn(PageResponse.from(new PageImpl<>(List.of(orderResponse()))));
 
                 // when & then
                 mockMvc.perform(get("/api/orders")
