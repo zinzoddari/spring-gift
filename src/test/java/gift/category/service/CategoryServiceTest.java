@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 import gift.category.dto.CategoryRequest;
 import gift.category.dto.CategoryResponse;
 import gift.category.repository.CategoryRepository;

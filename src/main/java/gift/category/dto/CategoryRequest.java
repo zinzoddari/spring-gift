@@ -1,6 +1,6 @@
 package gift.category.dto;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 import jakarta.validation.constraints.NotBlank;
 
 public record CategoryRequest(

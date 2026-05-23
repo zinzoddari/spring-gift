@@ -1,6 +1,6 @@
 package gift.category.service;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 import gift.category.dto.CategoryRequest;
 import gift.category.dto.CategoryResponse;
 import gift.category.repository.CategoryRepository;

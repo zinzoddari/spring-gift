@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 import gift.category.repository.CategoryRepository;
 import gift.common.dto.PageResponse;
 import gift.product.domain.Product;

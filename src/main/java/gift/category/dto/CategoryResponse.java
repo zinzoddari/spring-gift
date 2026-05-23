@@ -1,6 +1,6 @@
 package gift.category.dto;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 
 public record CategoryResponse(
     Long id,

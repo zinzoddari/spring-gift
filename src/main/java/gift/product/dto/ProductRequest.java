@@ -1,6 +1,6 @@
 package gift.product.dto;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 import gift.product.domain.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

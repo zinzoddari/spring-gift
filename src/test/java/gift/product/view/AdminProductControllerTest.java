@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import gift.auth.AuthenticationResolver;
-import gift.category.Category;
+import gift.category.domain.Category;
 import gift.category.repository.CategoryRepository;
 import gift.product.domain.Product;
 import gift.product.repository.ProductRepository;

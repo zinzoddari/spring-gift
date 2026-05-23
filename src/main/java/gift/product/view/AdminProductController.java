@@ -1,6 +1,6 @@
 package gift.product.view;
 
-import gift.category.Category;
+import gift.category.domain.Category;
 import gift.category.repository.CategoryRepository;
 import gift.product.domain.Product;
 import gift.product.ProductNameValidator;
