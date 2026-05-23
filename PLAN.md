@@ -1,11 +1,16 @@
 # PLAN
 
 ## 지금
-- [ ] OrderController 서비스 계층 분리 (OrderService, OrderFacade, 트랜잭션 경계)
+- [ ] CategoryController 리팩토링 (CategoryService 계층 분리, 트랜잭션 경계)
 - [ ] 테스트 환경 설정
 - [ ] 누락 기능 구현
 
 ## 완료
+- [x] 주문 생성 시 위시리스트 자동 제거 (WishService.removeWishByProduct, deleteByMemberIdAndProductId)
+- [x] 주문 카카오 알림 이벤트 기반 처리 (@TransactionalEventListener, OrderCreatedEvent, KakaoNotificationListener)
+- [x] ADR-009 카카오 알림 트랜잭션 외부 처리 결정 (C안: @TransactionalEventListener)
+- [x] OrderController 서비스 계층 분리 (OrderService, OrderFacade, 트랜잭션 경계)
+- [x] OrderFacade.createOrder Javadoc 한글 작성
 - [x] OptionService / OptionFacade 계층 분리 (Controller → Facade → Service, ADR-008)
 - [x] OptionController 리팩토링 (OptionFacade 위임, final, 코드 정리)
 - [x] OptionControllerTest / OptionServiceTest 작성
