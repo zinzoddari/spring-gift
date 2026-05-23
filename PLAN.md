@@ -1,19 +1,21 @@
 # PLAN
 
 ## 지금
-- [ ] WishController 리팩토링 (WishService 계층 분리, 인증/예외 처리 정리)
+- [ ] OptionService 계층 분리 (비즈니스 로직 이전, 트랜잭션 경계)
+- [ ] OptionController 리팩토링 (서비스 위임, final, 코드 정리)
+- [ ] OptionController / OptionService 테스트 작성
 
 ## 다음
-- [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기
-
-## 할 것
-- [ ] 서비스 계층 추출
-- [ ] 트랜잭션 경계 추가
+- [ ] OrderController 서비스 계층 분리
+- [ ] 도메인 클래스 domain 패키지로 이동 (Wish, Option 등)
 - [ ] 테스트 환경 설정
-- [ ] 누락 작동 구현
-- [ ] 도메인 클래스 domain 패키지로 이동
+- [ ] 누락 기능 구현
 
 ## 완료
+- [x] WishController 리팩토링 (WishService 계층 분리, PageResponse, 트랜잭션 경계)
+- [x] MemberArgumentResolver 도입 (HandlerMethodArgumentResolver 기반 인증 일원화, ADR-005)
+- [x] MemberInfo DTO 추가 (엔티티 대신 DTO를 ArgumentResolver에서 반환)
+- [x] GlobalExceptionHandler 예외 핸들러 확장 (SecurityException → 403, UnauthorizedException → 401)
 - [x] KakaoAuthFacade 계층 추가 (KakaoAuthService 오케스트레이션/도메인 분리)
 - [x] ProductController 리팩토링 (ProductService 계층 분리, PageResponse<T> DTO, 트랜잭션 경계 추가)
 - [x] PageResponse<T> — Page JSON 구조 완전 일치 (pageable, sort, numberOfElements 포함)
