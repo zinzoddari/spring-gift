@@ -30,10 +30,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse getProduct(final Long id) {
-        final Product product = productRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
-        return ProductResponse.from(product);
+    public ProductResponse findProduct(final Long id) {
+        return ProductResponse.from(productRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다.")));
     }
 
     @Transactional
@@ -61,6 +60,10 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
+    /**
+     * 상품 이름의 유효성을 검증합니다.
+     * 유효하지 않은 경우 예외를 발생시킵니다.
+     */
     private void validateName(final String name) {
         final List<String> errors = ProductNameValidator.validate(name);
         if (!errors.isEmpty()) {

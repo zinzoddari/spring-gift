@@ -28,8 +28,6 @@ public class OptionService {
 
     @Transactional(readOnly = true)
     public List<OptionResponse> getOptions(final Long productId) {
-        productRepository.findById(productId)
-            .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
         return optionRepository.findByProductId(productId).stream()
             .map(OptionResponse::from)
             .toList();
@@ -55,9 +53,6 @@ public class OptionService {
 
     @Transactional
     public void deleteOption(final Long productId, final Long optionId) {
-        productRepository.findById(productId)
-            .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
-
         final List<Option> options = optionRepository.findByProductId(productId);
         if (options.size() <= 1) {
             throw new IllegalArgumentException("옵션이 1개인 상품은 옵션을 삭제할 수 없습니다.");

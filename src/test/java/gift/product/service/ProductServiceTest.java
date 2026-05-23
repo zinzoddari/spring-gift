@@ -95,7 +95,7 @@ class ProductServiceTest {
                 given(productRepository.findById(1L)).willReturn(Optional.of(product));
 
                 // when
-                final ProductResponse result = productService.getProduct(1L);
+                final ProductResponse result = productService.findProduct(1L);
 
                 // then
                 assertThat(result.name()).isEqualTo("상품A");
@@ -113,7 +113,7 @@ class ProductServiceTest {
                 given(productRepository.findById(99L)).willReturn(Optional.empty());
 
                 // when & then
-                assertThatThrownBy(() -> productService.getProduct(99L))
+                assertThatThrownBy(() -> productService.findProduct(99L))
                     .isInstanceOf(NoSuchElementException.class);
             }
         }

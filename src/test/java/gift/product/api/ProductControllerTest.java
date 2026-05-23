@@ -83,7 +83,7 @@ class ProductControllerTest {
             @DisplayName("상품을 반환한다.")
             void returnsProduct() throws Exception {
                 // given
-                given(productService.getProduct(1L)).willReturn(productResponse());
+                given(productService.findProduct(1L)).willReturn(productResponse());
 
                 // when & then
                 mockMvc.perform(get("/api/products/1"))
@@ -100,7 +100,7 @@ class ProductControllerTest {
             @DisplayName("존재하지 않는 id면 404를 반환한다.")
             void returnsNotFound() throws Exception {
                 // given
-                given(productService.getProduct(99L)).willThrow(new NoSuchElementException());
+                given(productService.findProduct(99L)).willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(get("/api/products/99"))

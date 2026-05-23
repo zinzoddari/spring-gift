@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gift.auth.AuthenticationResolver;
 import gift.option.dto.OptionRequest;
 import gift.option.dto.OptionResponse;
-import gift.option.service.OptionService;
+import gift.option.service.OptionFacade;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,7 @@ class OptionControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private OptionService optionService;
+    private OptionFacade optionFacade;
 
     @Nested
     @DisplayName("옵션 목록을 조회할 때,")
@@ -51,7 +51,7 @@ class OptionControllerTest {
             @DisplayName("상품의 옵션 여러 개를 반환한다.")
             void returnsOptionList() throws Exception {
                 // given
-                given(optionService.getOptions(1L)).willReturn(List.of(
+                given(optionFacade.getOptions(1L)).willReturn(List.of(
                     new OptionResponse(1L, "옵션A", 10),
                     new OptionResponse(2L, "옵션B", 5)
                 ));
@@ -73,7 +73,7 @@ class OptionControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductNotFound() throws Exception {
                 // given
-                given(optionService.getOptions(99L)).willThrow(new NoSuchElementException());
+                given(optionFacade.getOptions(99L)).willThrow(new NoSuchElementException());
 
                 // when & then
                 mockMvc.perform(get("/api/products/99/options"))
@@ -94,7 +94,7 @@ class OptionControllerTest {
             @DisplayName("생성된 옵션과 201을 반환한다.")
             void returnsCreatedOption() throws Exception {
                 // given
-                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                given(optionFacade.createOption(eq(1L), any(OptionRequest.class)))
                     .willReturn(new OptionResponse(1L, "옵션A", 10));
 
                 // when & then
@@ -117,7 +117,7 @@ class OptionControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductNotFound() throws Exception {
                 // given
-                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                given(optionFacade.createOption(eq(1L), any(OptionRequest.class)))
                     .willThrow(new NoSuchElementException());
 
                 // when & then
@@ -133,7 +133,7 @@ class OptionControllerTest {
             @DisplayName("이미 존재하는 옵션명이면 400을 반환한다.")
             void returnsBadRequestWhenDuplicateName() throws Exception {
                 // given
-                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                given(optionFacade.createOption(eq(1L), any(OptionRequest.class)))
                     .willThrow(new IllegalArgumentException("이미 존재하는 옵션명입니다."));
 
                 // when & then
@@ -149,7 +149,7 @@ class OptionControllerTest {
             @DisplayName("허용되지 않는 특수문자가 포함된 이름이면 400을 반환한다.")
             void returnsBadRequestWhenInvalidName() throws Exception {
                 // given
-                given(optionService.createOption(eq(1L), any(OptionRequest.class)))
+                given(optionFacade.createOption(eq(1L), any(OptionRequest.class)))
                     .willThrow(new IllegalArgumentException("허용되지 않는 특수문자가 포함되어 있습니다."));
 
                 // when & then
@@ -175,7 +175,7 @@ class OptionControllerTest {
             @DisplayName("옵션을 삭제하고 204를 반환한다.")
             void returnsNoContent() throws Exception {
                 // given
-                willDoNothing().given(optionService).deleteOption(1L, 1L);
+                willDoNothing().given(optionFacade).deleteOption(1L, 1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/1"))
@@ -191,7 +191,7 @@ class OptionControllerTest {
             @DisplayName("상품이 없으면 404를 반환한다.")
             void returnsNotFoundWhenProductNotFound() throws Exception {
                 // given
-                willThrow(new NoSuchElementException()).given(optionService).deleteOption(1L, 1L);
+                willThrow(new NoSuchElementException()).given(optionFacade).deleteOption(1L, 1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/1"))
@@ -203,7 +203,7 @@ class OptionControllerTest {
             void returnsBadRequestWhenLastOption() throws Exception {
                 // given
                 willThrow(new IllegalArgumentException("옵션이 1개인 상품은 옵션을 삭제할 수 없습니다."))
-                    .given(optionService).deleteOption(1L, 1L);
+                    .given(optionFacade).deleteOption(1L, 1L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/1"))
@@ -214,7 +214,7 @@ class OptionControllerTest {
             @DisplayName("옵션이 없으면 404를 반환한다.")
             void returnsNotFoundWhenOptionNotFound() throws Exception {
                 // given
-                willThrow(new NoSuchElementException()).given(optionService).deleteOption(1L, 99L);
+                willThrow(new NoSuchElementException()).given(optionFacade).deleteOption(1L, 99L);
 
                 // when & then
                 mockMvc.perform(delete("/api/products/1/options/99"))

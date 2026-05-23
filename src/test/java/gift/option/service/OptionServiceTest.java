@@ -59,7 +59,6 @@ class OptionServiceTest {
             void returnsOptionList() {
                 // given
                 final Option option = optionWithResponse();
-                given(productRepository.findById(1L)).willReturn(Optional.of(mock(Product.class)));
                 given(optionRepository.findByProductId(1L)).willReturn(List.of(option));
 
                 // when
@@ -71,22 +70,6 @@ class OptionServiceTest {
                     softly.assertThat(result.get(0).name()).isEqualTo("옵션A");
                     softly.assertThat(result.get(0).quantity()).isEqualTo(10);
                 });
-            }
-        }
-
-        @Nested
-        @DisplayName("실패하면,")
-        class WhenFailed {
-
-            @Test
-            @DisplayName("상품이 없으면 예외가 발생한다.")
-            void throwsWhenProductNotFound() {
-                // given
-                given(productRepository.findById(99L)).willReturn(Optional.empty());
-
-                // when & then
-                assertThatThrownBy(() -> optionService.getOptions(99L))
-                    .isInstanceOf(NoSuchElementException.class);
             }
         }
     }
@@ -176,7 +159,6 @@ class OptionServiceTest {
                 // given
                 final Option option = mock(Option.class);
                 final Option otherOption = mock(Option.class);
-                given(productRepository.findById(1L)).willReturn(Optional.of(mock(Product.class)));
                 given(optionRepository.findByProductId(1L)).willReturn(List.of(option, otherOption));
                 given(optionRepository.findById(1L)).willReturn(Optional.of(option));
                 willDoNothing().given(optionRepository).delete(option);
@@ -194,21 +176,9 @@ class OptionServiceTest {
         class WhenFailed {
 
             @Test
-            @DisplayName("상품이 없으면 예외가 발생한다.")
-            void throwsWhenProductNotFound() {
-                // given
-                given(productRepository.findById(1L)).willReturn(Optional.empty());
-
-                // when & then
-                assertThatThrownBy(() -> optionService.deleteOption(1L, 1L))
-                    .isInstanceOf(NoSuchElementException.class);
-            }
-
-            @Test
             @DisplayName("옵션이 1개뿐이면 예외가 발생한다.")
             void throwsWhenLastOption() {
                 // given
-                given(productRepository.findById(1L)).willReturn(Optional.of(mock(Product.class)));
                 given(optionRepository.findByProductId(1L)).willReturn(List.of(mock(Option.class)));
 
                 // when & then
@@ -220,7 +190,6 @@ class OptionServiceTest {
             @DisplayName("옵션이 없으면 예외가 발생한다.")
             void throwsWhenOptionNotFound() {
                 // given
-                given(productRepository.findById(1L)).willReturn(Optional.of(mock(Product.class)));
                 given(optionRepository.findByProductId(1L))
                     .willReturn(List.of(mock(Option.class), mock(Option.class)));
                 given(optionRepository.findById(99L)).willReturn(Optional.empty());

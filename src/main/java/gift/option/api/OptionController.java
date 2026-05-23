@@ -2,7 +2,7 @@ package gift.option.api;
 
 import gift.option.dto.OptionRequest;
 import gift.option.dto.OptionResponse;
-import gift.option.service.OptionService;
+import gift.option.service.OptionFacade;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/products/{productId}/options")
 class OptionController {
 
-    private final OptionService optionService;
+    private final OptionFacade optionFacade;
 
-    public OptionController(final OptionService optionService) {
-        this.optionService = optionService;
+    public OptionController(final OptionFacade optionFacade) {
+        this.optionFacade = optionFacade;
     }
 
     @GetMapping
     public ResponseEntity<List<OptionResponse>> getOptions(@PathVariable final Long productId) {
-        return ResponseEntity.ok(optionService.getOptions(productId));
+        return ResponseEntity.ok(optionFacade.getOptions(productId));
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ class OptionController {
         @PathVariable final Long productId,
         @Valid @RequestBody final OptionRequest request
     ) {
-        final OptionResponse response = optionService.createOption(productId, request);
+        final OptionResponse response = optionFacade.createOption(productId, request);
         final URI location = URI.create("/api/products/" + productId + "/options/" + response.id());
         return ResponseEntity.created(location).body(response);
     }
@@ -45,7 +45,7 @@ class OptionController {
         @PathVariable final Long productId,
         @PathVariable final Long optionId
     ) {
-        optionService.deleteOption(productId, optionId);
+        optionFacade.deleteOption(productId, optionId);
         return ResponseEntity.noContent().build();
     }
 }
