@@ -10,7 +10,7 @@
 
 ## 상황
 
-ADR-002에서 Kakao 클라이언트를 `gift.infra.kakao`로 분리했다.
+ADR-002에서 Kakao 클라이언트를 `gift.infra.client.kakao`로 분리했다.
 현재 `KakaoLoginClient`와 `KakaoMessageClient`는 HTTP 호출과 도메인 동작(토큰 교환, 메시지 포맷팅)을 한 클래스에서 담당한다.
 
 컨트롤러가 이 클라이언트를 직접 주입받기 때문에:

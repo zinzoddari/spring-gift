@@ -1,7 +1,7 @@
 package gift.auth.service;
 
-import gift.infra.kakao.KakaoLoginAdapter;
-import gift.infra.kakao.KakaoLoginProperties;
+import gift.infra.client.kakao.KakaoLoginAdapter;
+import gift.infra.client.kakao.KakaoLoginProperties;
 import gift.member.domain.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package gift.infra.kakao;
+package gift.infra.client.kakao;
 
 enum KakaoPath {
     OAUTH_TOKEN("/oauth/token"),

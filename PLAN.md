@@ -38,7 +38,7 @@
 - [x] 패키지 구조 변경 (api/view 서브 패키지, ADR-001)
 - [x] repository/ 서브 패키지 이동
 - [x] dto/ 서브 패키지 이동 (*Request, *Response)
-- [x] Client 역할 infra로 분리하기 (gift.infra.kakao, ADR-002)
+- [x] Client 역할 infra로 분리하기 (gift.infra.client.kakao, ADR-002)
 - [x] RestClient 타임아웃 설정 (RestClientConfig — connectTimeout 3s / readTimeout 5s)
 - [x] ADR-003 Kakao 클라이언트 추상화 구조 결정
 - [x] ADR-004 HTTP 클라이언트 테스트 전략 결정 (MockWebServer)

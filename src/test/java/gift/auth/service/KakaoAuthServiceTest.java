@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 
 import gift.member.domain.Member;
 
-import gift.infra.kakao.KakaoLoginAdapter;
-import gift.infra.kakao.KakaoLoginProperties;
+import gift.infra.client.kakao.KakaoLoginAdapter;
+import gift.infra.client.kakao.KakaoLoginProperties;
 import gift.member.repository.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

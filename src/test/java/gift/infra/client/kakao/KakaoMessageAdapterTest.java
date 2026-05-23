@@ -1,4 +1,4 @@
-package gift.infra.kakao;
+package gift.infra.client.kakao;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

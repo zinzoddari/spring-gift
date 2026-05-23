@@ -1,4 +1,4 @@
-package gift.infra.kakao;
+package gift.infra.client.kakao;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;

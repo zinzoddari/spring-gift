@@ -1,4 +1,4 @@
-package gift.infra.kakao;
+package gift.infra.client.kakao;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

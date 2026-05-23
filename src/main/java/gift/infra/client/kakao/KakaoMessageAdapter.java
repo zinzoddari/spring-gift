@@ -1,4 +1,4 @@
-package gift.infra.kakao;
+package gift.infra.client.kakao;
 
 import gift.order.Order;
 import gift.product.domain.Product;

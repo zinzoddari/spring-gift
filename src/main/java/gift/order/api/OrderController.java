@@ -1,6 +1,6 @@
 package gift.order.api;
 
-import gift.infra.kakao.KakaoMessageAdapter;
+import gift.infra.client.kakao.KakaoMessageAdapter;
 import gift.order.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;

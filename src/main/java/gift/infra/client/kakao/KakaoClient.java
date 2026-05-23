@@ -1,4 +1,4 @@
-package gift.infra.kakao;
+package gift.infra.client.kakao;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;

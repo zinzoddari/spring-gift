@@ -1,4 +1,4 @@
-package gift.infra;
+package gift.infra.client;
 
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
