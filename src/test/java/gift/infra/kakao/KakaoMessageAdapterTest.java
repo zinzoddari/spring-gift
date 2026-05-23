@@ -20,11 +20,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
-@DisplayName("KakaoMessageClient")
-class KakaoMessageClientTest {
+
+@DisplayName("KakaoMessageAdapter")
+class KakaoMessageAdapterTest {
 
     private MockWebServer mockWebServer;
-    private KakaoMessageClient kakaoMessageClient;
+    private KakaoMessageAdapter kakaoMessageClient;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -32,15 +33,9 @@ class KakaoMessageClientTest {
         mockWebServer.start();
 
         final String baseUrl = mockWebServer.url("/").toString();
-        final KakaoLoginProperties properties = new KakaoLoginProperties(
-            "test-client-id",
-            "test-client-secret",
-            "http://localhost/callback",
-            baseUrl,
-            baseUrl
-        );
+        final KakaoClient kakaoClient = new KakaoClient(RestClient.builder().baseUrl(baseUrl).build());
 
-        kakaoMessageClient = new KakaoMessageClient(properties, RestClient.builder());
+        kakaoMessageClient = new KakaoMessageAdapter(kakaoClient);
     }
 
     @AfterEach

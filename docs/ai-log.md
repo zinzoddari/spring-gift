@@ -71,6 +71,23 @@
 - 요청: KakaoLoginClient를 KakaoLoginAdapter로 rename
 - 결과: `KakaoLoginClient.java` → `KakaoLoginAdapter.java`, `KakaoLoginClientTest.java` → `KakaoLoginAdapterTest.java`, `KakaoAuthController` import 수정
 
+### 작업: KakaoAuthService.login() @Transactional 추가 및 String 반환
+- 요청: login()에 @Transactional 추가, Member 대신 email(String) 반환
+- 결과: `@Transactional` 적용, `return member.getEmail()`로 변경, `KakaoAuthFacade` / `KakaoAuthFacadeTest` 연동 수정
+
+### 작업: Member.updateKakaoAccessToken → applyKakaoToken 이름 변경
+- 요청: update 접두어 대신 의미가 명확한 이름으로 변경
+- 결과: `Member.applyKakaoToken()`, `KakaoAuthService` 호출부 수정
+
+### 작업: KakaoMessageClient → KakaoMessageAdapter 이름 변경 및 KakaoClient 리팩토링
+- 요청: KakaoMessageClient를 KakaoMessageAdapter로 rename, KakaoLoginAdapter처럼 KakaoClient 사용
+- 결과:
+    - `KakaoMessageClient.java` → `KakaoMessageAdapter.java`, `KakaoMessageClientTest.java` → `KakaoMessageAdapterTest.java`
+    - `KakaoLoginProperties` + `RestClient.Builder` 의존 제거 → `@Qualifier("kakaoApiClient") KakaoClient` 주입
+    - `postVoid(KakaoPath.SEND_MESSAGE.path(), ...)` 사용
+    - `OrderController` import 수정
+    - 테스트: `new KakaoClient(RestClient.builder().baseUrl(baseUrl).build())` 패턴으로 업데이트
+
 ### 작업: KakaoLoginClient → KakaoClient 리팩토링
 - 요청: KakaoLoginClient가 RestClient를 직접 사용하던 것을 KakaoClient 래퍼로 교체
 - 결과:

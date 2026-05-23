@@ -1,7 +1,7 @@
 package gift.order.api;
 
 import gift.auth.AuthenticationResolver;
-import gift.infra.kakao.KakaoMessageClient;
+import gift.infra.kakao.KakaoMessageAdapter;
 import gift.order.Order;
 import gift.order.dto.OrderRequest;
 import gift.order.dto.OrderResponse;
@@ -31,7 +31,7 @@ public class OrderController {
     private final WishRepository wishRepository;
     private final MemberRepository memberRepository;
     private final AuthenticationResolver authenticationResolver;
-    private final KakaoMessageClient kakaoMessageClient;
+    private final KakaoMessageAdapter kakaoMessageClient;
 
     public OrderController(
         OrderRepository orderRepository,
@@ -39,7 +39,7 @@ public class OrderController {
         WishRepository wishRepository,
         MemberRepository memberRepository,
         AuthenticationResolver authenticationResolver,
-        KakaoMessageClient kakaoMessageClient
+        KakaoMessageAdapter kakaoMessageClient
     ) {
         this.orderRepository = orderRepository;
         this.optionRepository = optionRepository;
