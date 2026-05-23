@@ -46,6 +46,14 @@
 - 요청: RestClient 자체 역직렬화 기능 활용
 - 결과: `ObjectMapper` 및 `deserialize()` 완전 제거, `TypeReference` → `ParameterizedTypeReference`로 교체해 RestClient가 직접 역직렬화
 
+### 작업: KakaoAuthController 서비스 계층 추출 및 테스트
+- 요청: KakaoAuthController 비즈니스 로직을 KakaoAuthService로 분리, 테스트 작성
+- 결과:
+    - `KakaoAuthService`: `loginUrl()`, `login(code)` — KakaoLoginProperties/KakaoLoginAdapter/MemberRepository/JwtProvider 의존
+    - `KakaoAuthController`: KakaoAuthService만 주입, 컨트롤러는 HTTP 레이어만 담당
+    - `KakaoAuthControllerTest`: KakaoAuthService 단일 mock으로 단순화
+    - `KakaoAuthServiceTest`: `@ExtendWith(MockitoExtension)` 순수 단위 테스트, loginUrl/login 신규·기존 회원 케이스
+
 ### 작업: KakaoAuthController 테스트 작성
 - 요청: KakaoAuthController 테스트 코드 작성 (BDD 스타일, KakaoClientTest 형식)
 - 결과: `gift/auth/api/KakaoAuthControllerTest.java` — `@WebMvcTest` + `@MockitoBean`, `@TestConfiguration`으로 `KakaoLoginProperties` 제공, `/login` 리다이렉트 / `/callback` 신규·기존 회원 케이스
