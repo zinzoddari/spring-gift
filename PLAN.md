@@ -2,6 +2,7 @@
 
 ## 지금
 - [ ] KakaoMessageAdapter 작성 및 테스트
+- [ ] KakaoAuthController 리팩토링 (서비스 계층 추출)
 
 ## 다음
 - [ ] Resolver를 별도 클래스로 할지, Validate를 이용할지 고민하고 적용하기
