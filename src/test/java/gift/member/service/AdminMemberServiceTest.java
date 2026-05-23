@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import gift.member.domain.Member;
+import gift.member.dto.AdminMemberResponse;
 import gift.member.repository.MemberRepository;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,8 @@ class AdminMemberServiceTest {
     private Member member() {
         final Member member = mock(Member.class);
         given(member.getId()).willReturn(1L);
+        given(member.getEmail()).willReturn("test@test.com");
+        given(member.getPoint()).willReturn(1_000);
         return member;
     }
 
@@ -53,12 +56,13 @@ class AdminMemberServiceTest {
                 given(memberRepository.findAll()).willReturn(List.of(member));
 
                 // when
-                final List<Member> result = adminMemberService.getMembers();
+                final List<AdminMemberResponse> result = adminMemberService.getMembers();
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(result).hasSize(1);
-                    softly.assertThat(result.get(0).getId()).isEqualTo(1L);
+                    softly.assertThat(result.get(0).id()).isEqualTo(1L);
+                    softly.assertThat(result.get(0).email()).isEqualTo("test@test.com");
                 });
             }
         }
@@ -80,10 +84,10 @@ class AdminMemberServiceTest {
                 given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
                 // when
-                final Member result = adminMemberService.getMember(1L);
+                final AdminMemberResponse result = adminMemberService.getMember(1L);
 
                 // then
-                assertThat(result.getId()).isEqualTo(1L);
+                assertThat(result.id()).isEqualTo(1L);
             }
         }
 

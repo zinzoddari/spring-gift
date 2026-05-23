@@ -1,6 +1,7 @@
 package gift.member.service;
 
 import gift.member.domain.Member;
+import gift.member.dto.AdminMemberResponse;
 import gift.member.repository.MemberRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,15 @@ public class AdminMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<Member> getMembers() {
-        return memberRepository.findAll();
+    public List<AdminMemberResponse> getMembers() {
+        return memberRepository.findAll().stream()
+            .map(AdminMemberResponse::from)
+            .toList();
     }
 
     @Transactional(readOnly = true)
-    public Member getMember(final Long id) {
-        return memberRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Member not found. id=" + id));
+    public AdminMemberResponse getMember(final Long id) {
+        return AdminMemberResponse.from(findMember(id));
     }
 
     @Transactional
@@ -37,20 +39,21 @@ public class AdminMemberService {
 
     @Transactional
     public void updateMember(final Long id, final String email, final String password) {
-        final Member member = getMember(id);
-
-        member.update(email, password);
+        findMember(id).update(email, password);
     }
 
     @Transactional
     public void chargePoint(final Long id, final int amount) {
-        final Member member = getMember(id);
-
-        member.chargePoint(amount);
+        findMember(id).chargePoint(amount);
     }
 
     @Transactional
     public void deleteMember(final Long id) {
         memberRepository.deleteById(id);
+    }
+
+    private Member findMember(final Long id) {
+        return memberRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Member not found. id=" + id));
     }
 }

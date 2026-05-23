@@ -3,7 +3,6 @@ package gift.member.view;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -12,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import gift.auth.AuthenticationResolver;
-import gift.member.domain.Member;
+import gift.member.dto.AdminMemberResponse;
 import gift.member.service.AdminMemberService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -36,13 +35,8 @@ class AdminMemberControllerTest {
     @MockitoBean
     private AdminMemberService adminMemberService;
 
-    private Member member() {
-        final Member member = mock(Member.class);
-        given(member.getId()).willReturn(1L);
-        given(member.getEmail()).willReturn("test@test.com");
-        given(member.getPassword()).willReturn("password");
-        given(member.getPoint()).willReturn(1_000);
-        return member;
+    private AdminMemberResponse memberResponse() {
+        return new AdminMemberResponse(1L, "test@test.com", "password", 1_000);
     }
 
     @Nested
@@ -57,8 +51,7 @@ class AdminMemberControllerTest {
             @DisplayName("회원 목록 뷰를 반환한다.")
             void returnsMemberListView() throws Exception {
                 // given
-                final Member member = member();
-                given(adminMemberService.getMembers()).willReturn(List.of(member));
+                given(adminMemberService.getMembers()).willReturn(List.of(memberResponse()));
 
                 // when & then
                 mockMvc.perform(get("/admin/members"))
@@ -144,8 +137,7 @@ class AdminMemberControllerTest {
             @DisplayName("회원 수정 뷰를 반환한다.")
             void returnsMemberEditView() throws Exception {
                 // given
-                final Member member = member();
-                given(adminMemberService.getMember(1L)).willReturn(member);
+                given(adminMemberService.getMember(1L)).willReturn(memberResponse());
 
                 // when & then
                 mockMvc.perform(get("/admin/members/1/edit"))
