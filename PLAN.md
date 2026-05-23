@@ -1,17 +1,16 @@
 # PLAN
 
 ## 지금
-- [ ] OptionService 계층 분리 (비즈니스 로직 이전, 트랜잭션 경계)
-- [ ] OptionController 리팩토링 (서비스 위임, final, 코드 정리)
-- [ ] OptionController / OptionService 테스트 작성
-
-## 다음
-- [ ] OrderController 서비스 계층 분리
-- [ ] 도메인 클래스 domain 패키지로 이동 (Wish, Option 등)
+- [ ] OrderController 서비스 계층 분리 (OrderService, OrderFacade, 트랜잭션 경계)
 - [ ] 테스트 환경 설정
 - [ ] 누락 기능 구현
 
 ## 완료
+- [x] OptionService / OptionFacade 계층 분리 (Controller → Facade → Service, ADR-008)
+- [x] OptionController 리팩토링 (OptionFacade 위임, final, 코드 정리)
+- [x] OptionControllerTest / OptionServiceTest 작성
+- [x] ADR-008 서비스 간 직접 참조 금지 — Facade로 조합
+- [x] ProductService.findProduct() 통합 (getProduct 제거, ProductResponse 반환)
 - [x] WishController 리팩토링 (WishService 계층 분리, PageResponse, 트랜잭션 경계)
 - [x] MemberArgumentResolver 도입 (HandlerMethodArgumentResolver 기반 인증 일원화, ADR-005)
 - [x] MemberInfo DTO 추가 (엔티티 대신 DTO를 ArgumentResolver에서 반환)
