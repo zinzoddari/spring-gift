@@ -115,6 +115,66 @@
 
 ---
 
+## 2026-05-24
+
+### 작업: 주문 생성 시 위시리스트 자동 제거
+- 요청: `OrderFacade.createOrder`의 TODO 구현
+- 결과:
+    - `WishRepository.deleteByMemberIdAndProductId()` Spring Data derived delete 추가
+    - `WishService.removeWishByProduct(memberId, productId)` 추가 — 위시 없어도 예외 없이 통과
+    - `OrderFacade`: `WishService` 주입, TODO 교체
+- 근거: 주문 완료 시 해당 상품 위시 자동 정리
+
+### 작업: CategoryService 계층 분리 및 테스트
+- 요청: CategoryController에서 Repository 직접 참조 제거, CategoryService 분리
+- 결과:
+    - `CategoryService`: `getCategories` / `createCategory` / `updateCategory` / `deleteCategory` — dirty checking으로 `updateCategory` 내 `save()` 제거
+    - `CategoryController`: CategoryService만 의존
+    - `CategoryServiceTest`: MockitoExtension 순수 단위 테스트
+
+### 작업: AdminMemberController 리팩토링 및 테스트
+- 요청: AdminMemberController에서 Repository 직접 참조 제거, 서비스 분리, 테스트 작성
+- 결과:
+    - `AdminMemberService`: `getMembers` / `getMember` / `createMember` / `updateMember` / `chargePoint` / `deleteMember` — dirty checking 적용
+    - `AdminMemberResponse` DTO: `id`, `email`, `password`, `point` — edit.html `th:value="${member.password}"` 호환
+    - `AdminMemberController`: AdminMemberService만 의존, `create()` 이메일 중복 시 try-catch로 폼 재렌더링
+    - `AdminMemberControllerTest`: `@WebMvcTest` + `@MockitoBean`
+    - `AdminMemberServiceTest`: MockitoExtension 순수 단위 테스트
+- 결정: API 서비스(`MemberService`, JwtProvider 의존)와 뷰 서비스(`AdminMemberService`, CRUD 전용) 분리 → ADR-010
+
+### 작업: AdminProductController 리팩토링 및 테스트
+- 요청: AdminProductController에서 Repository 직접 참조 제거, 서비스 분리, 테스트 작성
+- 결과:
+    - `AdminProductService`: `getProducts` / `getCategories` / `getProduct` / `createProduct` / `updateProduct` / `deleteProduct` — private `findProduct()` 헬퍼 분리
+    - `AdminProductController`: AdminProductService만 의존, `ProductNameValidator`는 컨트롤러에 유지 (순수 함수, 뷰 라우팅 결정)
+    - `AdminProductControllerTest`: `@WebMvcTest` + `@MockitoBean`
+
+### 작업: Entity @Column / @Table 명시
+- 요청: V1 SQL 스키마 참조하여 모든 엔티티에 컬럼명, 타입(length), 제약(nullable, unique) 명시
+- 결과: `Category` / `Product` / `Member` / `Wish` / `Order` — `@Table(name)`, `@Column(name, nullable, length, unique)` 전면 추가, `Option`은 기존 유지
+
+### 작업: OptionFacadeTest / AuthenticationResolverTest 작성
+- 요청: 각 클래스 단위 테스트 작성
+- 결과:
+    - `OptionFacadeTest`: getOptions / createOption / deleteOption 성공·실패 케이스
+    - `AuthenticationResolverTest`: 유효 토큰 / 회원 없음 / 유효하지 않은 토큰 / null Authorization 케이스
+
+### 작업: 재고 동시성 제어 — 낙관적 락 (@Version)
+- 요청: 동시 주문 시 재고 음수 방지
+- 결과:
+    - `Option` 엔티티에 `@Version Long version` 추가
+    - `V3__Add_version_to_options.sql`: `version bigint not null default 0` 컬럼 추가
+    - `GlobalExceptionHandler`: `OptimisticLockException` / `ObjectOptimisticLockingFailureException` → 409 처리 (Spring이 JPA 예외를 래핑하므로 둘 다 필요)
+    - `OptionOptimisticLockTest`: `@DataJpaTest` + `@Transactional(NOT_SUPPORTED)` + `TransactionTemplate`으로 충돌 시나리오 재현, `ObjectOptimisticLockingFailureException` 발생 검증
+- 결정: ADR-011 — 낙관적 락 선택 (충돌 빈도 낮고 DB 락 오버헤드 없음)
+
+### 작업: wish 테이블 유니크 제약 추가
+- 요청: 동시 요청으로 인한 위시리스트 중복 저장 방지
+- 결과: `V4__Add_unique_constraint_to_wish.sql` — `(member_id, product_id)` 복합 유니크 제약
+- 결정: 엔티티 `@UniqueConstraint`는 추가하지 않음 — Flyway 환경에서는 마이그레이션이 진실의 원천
+
+---
+
 ## 2026-05-11
 
 ### 작업: ADR 템플릿 작성
