@@ -1,6 +1,6 @@
 package gift.auth.service;
 
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import gift.infra.jwt.JwtProvider;
@@ -26,7 +26,7 @@ class KakaoAuthFacadeTest {
     private KakaoAuthFacade kakaoAuthFacade;
 
     @Nested
-    @DisplayName("loginUrl()을 호출할 때,")
+    @DisplayName("카카오 로그인 URL을 요청할 때,")
     class LoginUrl {
 
         @Nested
@@ -34,7 +34,7 @@ class KakaoAuthFacadeTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("서비스가 반환한 URL을 그대로 반환한다.")
+            @DisplayName("카카오 인증 URL을 반환한다.")
             void delegatesToService() {
                 // given
                 given(kakaoAuthService.loginUrl())
@@ -44,14 +44,13 @@ class KakaoAuthFacadeTest {
                 final String url = kakaoAuthFacade.loginUrl();
 
                 // then
-                assertSoftly(softly ->
-                    softly.assertThat(url).contains("https://kauth.kakao.com/oauth/authorize"));
+                assertThat(url).contains("https://kauth.kakao.com/oauth/authorize");
             }
         }
     }
 
     @Nested
-    @DisplayName("login()을 호출할 때,")
+    @DisplayName("카카오 인증 코드로 로그인할 때,")
     class Login {
 
         @Nested
@@ -59,7 +58,7 @@ class KakaoAuthFacadeTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("서비스가 반환한 회원으로 JWT를 발급한다.")
+            @DisplayName("JWT 토큰을 발급한다.")
             void returnsJwt() {
                 // given
                 given(kakaoAuthService.login("auth-code"))
@@ -71,7 +70,7 @@ class KakaoAuthFacadeTest {
                 final String jwt = kakaoAuthFacade.login("auth-code");
 
                 // then
-                assertSoftly(softly -> softly.assertThat(jwt).isEqualTo("service-jwt"));
+                assertThat(jwt).isEqualTo("service-jwt");
             }
         }
     }

@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,7 +47,7 @@ class ProductControllerTest {
     }
 
     @Nested
-    @DisplayName("GET /api/products 를 호출할 때,")
+    @DisplayName("상품 목록을 조회할 때,")
     class GetProducts {
 
         @Nested
@@ -72,7 +71,7 @@ class ProductControllerTest {
     }
 
     @Nested
-    @DisplayName("GET /api/products/{id} 를 호출할 때,")
+    @DisplayName("상품을 단건 조회할 때,")
     class GetProduct {
 
         @Nested
@@ -97,7 +96,7 @@ class ProductControllerTest {
         class WhenFailed {
 
             @Test
-            @DisplayName("존재하지 않는 id면 404를 반환한다.")
+            @DisplayName("존재하지 않는 상품이면 조회에 실패한다.")
             void returnsNotFound() throws Exception {
                 // given
                 given(productService.findProduct(99L)).willThrow(new NoSuchElementException());
@@ -110,7 +109,7 @@ class ProductControllerTest {
     }
 
     @Nested
-    @DisplayName("POST /api/products 를 호출할 때,")
+    @DisplayName("상품을 등록할 때,")
     class CreateProduct {
 
         @Nested
@@ -118,7 +117,7 @@ class ProductControllerTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("201과 생성된 상품을 반환한다.")
+            @DisplayName("생성된 상품을 반환한다.")
             void returnsCreated() throws Exception {
                 // given
                 given(productService.createProduct(any(ProductRequest.class))).willReturn(productResponse());
@@ -139,7 +138,7 @@ class ProductControllerTest {
         class WhenFailed {
 
             @Test
-            @DisplayName("카테고리가 없으면 404를 반환한다.")
+            @DisplayName("카테고리가 없으면 등록에 실패한다.")
             void returnsNotFoundWhenCategoryMissing() throws Exception {
                 // given
                 given(productService.createProduct(any(ProductRequest.class)))
@@ -155,7 +154,7 @@ class ProductControllerTest {
             }
 
             @Test
-            @DisplayName("허용되지 않는 상품명이면 400을 반환한다.")
+            @DisplayName("허용되지 않는 상품명이면 등록에 실패한다.")
             void returnsBadRequestWhenInvalidName() throws Exception {
                 // given
                 given(productService.createProduct(any(ProductRequest.class)))
@@ -173,7 +172,7 @@ class ProductControllerTest {
     }
 
     @Nested
-    @DisplayName("PUT /api/products/{id} 를 호출할 때,")
+    @DisplayName("상품을 수정할 때,")
     class UpdateProduct {
 
         @Nested
@@ -203,7 +202,7 @@ class ProductControllerTest {
         class WhenFailed {
 
             @Test
-            @DisplayName("상품이 없으면 404를 반환한다.")
+            @DisplayName("상품이 없으면 수정에 실패한다.")
             void returnsNotFoundWhenProductMissing() throws Exception {
                 // given
                 given(productService.updateProduct(eq(99L), any(ProductRequest.class)))
@@ -221,7 +220,7 @@ class ProductControllerTest {
     }
 
     @Nested
-    @DisplayName("DELETE /api/products/{id} 를 호출할 때,")
+    @DisplayName("상품을 삭제할 때,")
     class DeleteProduct {
 
         @Nested
@@ -229,7 +228,7 @@ class ProductControllerTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("204를 반환한다.")
+            @DisplayName("상품이 삭제된다.")
             void returnsNoContent() throws Exception {
                 // given
                 willDoNothing().given(productService).deleteProduct(1L);

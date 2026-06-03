@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @DisplayName("MemberController")
 @WebMvcTest(MemberController.class)
-class MemberControllerTest {
+class c {
 
     @Autowired
     private MockMvc mockMvc;

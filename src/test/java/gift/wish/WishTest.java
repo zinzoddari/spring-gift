@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class WishTest {
 
     @Nested
-    @DisplayName("isOwnedBy()를 호출할 때,")
+    @DisplayName("찜 소유 여부를 확인할 때,")
     class IsOwnedBy {
 
         @Nested
@@ -21,7 +21,7 @@ class WishTest {
         class WhenOwner {
 
             @Test
-            @DisplayName("true를 반환한다.")
+            @DisplayName("소유자로 확인된다.")
             void returnsTrue() {
                 // given
                 final Wish wish = new Wish(1L, mock(Product.class));
@@ -39,7 +39,7 @@ class WishTest {
         class WhenNotOwner {
 
             @Test
-            @DisplayName("false를 반환한다.")
+            @DisplayName("소유자가 아닌 것으로 확인된다.")
             void returnsFalse() {
                 // given
                 final Wish wish = new Wish(1L, mock(Product.class));

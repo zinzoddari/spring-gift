@@ -32,7 +32,7 @@ class KakaoAuthControllerTest {
     private KakaoAuthFacade kakaoAuthFacade;
 
     @Nested
-    @DisplayName("GET /api/auth/kakao/login 을 호출할 때,")
+    @DisplayName("카카오 로그인을 요청할 때,")
     class Login {
 
         @Nested
@@ -40,7 +40,7 @@ class KakaoAuthControllerTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("Facade가 반환한 URL로 리다이렉트한다.")
+            @DisplayName("카카오 인증 URL로 리다이렉트한다.")
             void redirectsToLoginUrl() throws Exception {
                 // given
                 given(kakaoAuthFacade.loginUrl())
@@ -56,7 +56,7 @@ class KakaoAuthControllerTest {
     }
 
     @Nested
-    @DisplayName("GET /api/auth/kakao/callback 을 호출할 때,")
+    @DisplayName("카카오 인증 콜백을 처리할 때,")
     class Callback {
 
         @Nested
@@ -64,7 +64,7 @@ class KakaoAuthControllerTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("Facade가 반환한 JWT를 응답한다.")
+            @DisplayName("JWT 토큰을 응답한다.")
             void returnsJwt() throws Exception {
                 // given
                 given(kakaoAuthFacade.login("auth-code"))

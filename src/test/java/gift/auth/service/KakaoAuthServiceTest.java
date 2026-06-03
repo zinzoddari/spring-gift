@@ -1,6 +1,6 @@
 package gift.auth.service;
 
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -36,7 +36,7 @@ class KakaoAuthServiceTest {
     private KakaoAuthService kakaoAuthService;
 
     @Nested
-    @DisplayName("loginUrl()을 호출할 때,")
+    @DisplayName("카카오 로그인 URL을 요청할 때,")
     class LoginUrl {
 
         @Nested
@@ -44,7 +44,7 @@ class KakaoAuthServiceTest {
         class WhenSuccess {
 
             @Test
-            @DisplayName("Kakao 인증 URL을 반환한다.")
+            @DisplayName("카카오 인증 URL을 반환한다.")
             void returnsKakaoAuthUrl() {
                 // given
                 given(properties.authBaseUrl()).willReturn("https://kauth.kakao.com");
@@ -55,17 +55,15 @@ class KakaoAuthServiceTest {
                 final String url = kakaoAuthService.loginUrl();
 
                 // then
-                assertSoftly(softly -> {
-                    softly.assertThat(url).contains("https://kauth.kakao.com/oauth/authorize");
-                    softly.assertThat(url).contains("client_id=test-client-id");
-                    softly.assertThat(url).contains("redirect_uri=");
-                });
+                assertThat(url).contains("https://kauth.kakao.com/oauth/authorize");
+                assertThat(url).contains("client_id=test-client-id");
+                assertThat(url).contains("redirect_uri=");
             }
         }
     }
 
     @Nested
-    @DisplayName("login()을 호출할 때,")
+    @DisplayName("카카오 인증 코드로 로그인할 때,")
     class Login {
 
         @BeforeEach
@@ -94,7 +92,7 @@ class KakaoAuthServiceTest {
                 final String email = kakaoAuthService.login("auth-code");
 
                 // then
-                assertSoftly(softly -> softly.assertThat(email).isEqualTo("user@kakao.com"));
+                assertThat(email).isEqualTo("user@kakao.com");
             }
         }
 
@@ -114,10 +112,8 @@ class KakaoAuthServiceTest {
                 final String email = kakaoAuthService.login("auth-code");
 
                 // then
-                assertSoftly(softly -> {
-                    softly.assertThat(email).isEqualTo("user@kakao.com");
-                    softly.assertThat(existing.getKakaoAccessToken()).isEqualTo("kakao-token");
-                });
+                assertThat(email).isEqualTo("user@kakao.com");
+                assertThat(existing.getKakaoAccessToken()).isEqualTo("kakao-token");
             }
         }
     }
