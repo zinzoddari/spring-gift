@@ -23,7 +23,7 @@ public class OptionFacade {
 
     @Transactional(readOnly = true)
     public List<OptionResponse> getOptions(final Long productId) {
-        productService.findProduct(productId);
+        productService.validateExists(productId);
 
         return optionService.getOptions(productId);
     }
@@ -35,7 +35,7 @@ public class OptionFacade {
 
     @Transactional
     public void deleteOption(final Long productId, final Long optionId) {
-        productService.findProduct(productId);
+        productService.validateExists(productId);
 
         optionService.deleteOption(productId, optionId);
     }

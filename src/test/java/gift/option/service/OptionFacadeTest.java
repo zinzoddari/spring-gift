@@ -74,7 +74,7 @@ class OptionFacadeTest {
             void throwsWhenProductNotFound() {
                 // given
                 willThrow(new NoSuchElementException("상품을 찾을 수 없습니다."))
-                    .given(productService).findProduct(99L);
+                    .given(productService).validateExists(99L);
 
                 // when & then
                 assertThatThrownBy(() -> optionFacade.getOptions(99L))
@@ -172,7 +172,7 @@ class OptionFacadeTest {
             void throwsWhenProductNotFound() {
                 // given
                 willThrow(new NoSuchElementException("상품을 찾을 수 없습니다."))
-                    .given(productService).findProduct(99L);
+                    .given(productService).validateExists(99L);
 
                 // when & then
                 assertThatThrownBy(() -> optionFacade.deleteOption(99L, 1L))

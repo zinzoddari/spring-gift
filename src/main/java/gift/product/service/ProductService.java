@@ -55,6 +55,13 @@ public class ProductService {
         return ProductResponse.from(productRepository.save(product));
     }
 
+    @Transactional(readOnly = true)
+    public void validateExists(final Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new NoSuchElementException("상품을 찾을 수 없습니다.");
+        }
+    }
+
     @Transactional
     public void deleteProduct(final Long id) {
         productRepository.deleteById(id);
