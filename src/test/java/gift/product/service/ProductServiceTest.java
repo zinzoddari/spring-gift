@@ -28,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-@DisplayName("ProductService")
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 

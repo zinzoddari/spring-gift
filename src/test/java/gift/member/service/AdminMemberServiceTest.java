@@ -22,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@DisplayName("AdminMemberService")
 @ExtendWith(MockitoExtension.class)
 class AdminMemberServiceTest {
 

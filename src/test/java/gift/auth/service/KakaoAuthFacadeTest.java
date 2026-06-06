@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@DisplayName("KakaoAuthFacade")
 @ExtendWith(MockitoExtension.class)
 class KakaoAuthFacadeTest {
 

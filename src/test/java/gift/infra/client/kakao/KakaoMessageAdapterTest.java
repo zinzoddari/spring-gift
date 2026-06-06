@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
-@DisplayName("KakaoMessageAdapter")
 class KakaoMessageAdapterTest {
 
     private MockWebServer mockWebServer;

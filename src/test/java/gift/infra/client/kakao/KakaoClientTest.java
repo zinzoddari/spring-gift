@@ -17,7 +17,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-@DisplayName("KakaoClient")
 class KakaoClientTest {
 
     private MockWebServer mockWebServer;

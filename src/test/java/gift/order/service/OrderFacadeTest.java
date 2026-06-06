@@ -35,7 +35,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-@DisplayName("OrderFacade")
 @ExtendWith(MockitoExtension.class)
 class OrderFacadeTest {
 

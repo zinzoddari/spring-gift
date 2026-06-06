@@ -19,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@DisplayName("KakaoAuthService")
 @ExtendWith(MockitoExtension.class)
 class KakaoAuthServiceTest {
 
