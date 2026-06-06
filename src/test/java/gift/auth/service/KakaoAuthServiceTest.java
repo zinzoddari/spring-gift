@@ -8,6 +8,7 @@ import gift.member.domain.Member;
 
 import gift.infra.client.kakao.KakaoLoginAdapter;
 import gift.infra.client.kakao.KakaoLoginProperties;
+import gift.infra.jwt.JwtProvider;
 import gift.member.repository.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,9 @@ class KakaoAuthServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private JwtProvider jwtProvider;
 
     @InjectMocks
     private KakaoAuthService kakaoAuthService;
@@ -74,6 +78,8 @@ class KakaoAuthServiceTest {
                     new KakaoLoginAdapter.KakaoUserResponse.KakaoAccount("user@kakao.com")));
             given(memberRepository.save(any(Member.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
+            given(jwtProvider.createToken("user@kakao.com"))
+                .willReturn("service-jwt");
         }
 
         @Nested
@@ -81,17 +87,17 @@ class KakaoAuthServiceTest {
         class WhenNewMember {
 
             @Test
-            @DisplayName("회원을 등록하고 반환한다.")
+            @DisplayName("회원을 등록하고 JWT를 발급한다.")
             void registersAndReturns() {
                 // given
                 given(memberRepository.findByEmail("user@kakao.com"))
                     .willReturn(Optional.empty());
 
                 // when
-                final String email = kakaoAuthService.login("auth-code");
+                final String jwt = kakaoAuthService.login("auth-code");
 
                 // then
-                assertThat(email).isEqualTo("user@kakao.com");
+                assertThat(jwt).isEqualTo("service-jwt");
             }
         }
 
@@ -100,7 +106,7 @@ class KakaoAuthServiceTest {
         class WhenExistingMember {
 
             @Test
-            @DisplayName("카카오 토큰을 갱신하고 반환한다.")
+            @DisplayName("카카오 토큰을 갱신하고 JWT를 발급한다.")
             void updatesTokenAndReturns() {
                 // given
                 final Member existing = new Member("user@kakao.com");
@@ -108,10 +114,10 @@ class KakaoAuthServiceTest {
                     .willReturn(Optional.of(existing));
 
                 // when
-                final String email = kakaoAuthService.login("auth-code");
+                final String jwt = kakaoAuthService.login("auth-code");
 
                 // then
-                assertThat(email).isEqualTo("user@kakao.com");
+                assertThat(jwt).isEqualTo("service-jwt");
                 assertThat(existing.getKakaoAccessToken()).isEqualTo("kakao-token");
             }
         }

@@ -2,6 +2,7 @@ package gift.auth.service;
 
 import gift.infra.client.kakao.KakaoLoginAdapter;
 import gift.infra.client.kakao.KakaoLoginProperties;
+import gift.infra.jwt.JwtProvider;
 import gift.member.domain.Member;
 import gift.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,18 @@ public class KakaoAuthService {
     private final KakaoLoginProperties properties;
     private final KakaoLoginAdapter kakaoLoginAdapter;
     private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
     public KakaoAuthService(
         final KakaoLoginProperties properties,
         final KakaoLoginAdapter kakaoLoginAdapter,
-        final MemberRepository memberRepository
+        final MemberRepository memberRepository,
+        final JwtProvider jwtProvider
     ) {
         this.properties = properties;
         this.kakaoLoginAdapter = kakaoLoginAdapter;
         this.memberRepository = memberRepository;
+        this.jwtProvider = jwtProvider;
     }
 
     public String loginUrl() {
@@ -45,6 +49,6 @@ public class KakaoAuthService {
 
         memberRepository.save(member);
 
-        return member.getEmail();
+        return jwtProvider.createToken(member.getEmail());
     }
 }

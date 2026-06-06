@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gift.auth.AuthenticationResolver;
-import gift.auth.service.KakaoAuthFacade;
+import gift.auth.service.KakaoAuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class KakaoAuthControllerTest {
     private AuthenticationResolver authenticationResolver;
 
     @MockitoBean
-    private KakaoAuthFacade kakaoAuthFacade;
+    private KakaoAuthService kakaoAuthService;
 
     @Nested
     @DisplayName("카카오 로그인을 요청할 때,")
@@ -42,7 +42,7 @@ class KakaoAuthControllerTest {
             @DisplayName("카카오 인증 URL로 리다이렉트한다.")
             void redirectsToLoginUrl() throws Exception {
                 // given
-                given(kakaoAuthFacade.loginUrl())
+                given(kakaoAuthService.loginUrl())
                     .willReturn("https://kauth.kakao.com/oauth/authorize?client_id=test");
 
                 // when & then
@@ -66,7 +66,7 @@ class KakaoAuthControllerTest {
             @DisplayName("JWT 토큰을 응답한다.")
             void returnsJwt() throws Exception {
                 // given
-                given(kakaoAuthFacade.login("auth-code"))
+                given(kakaoAuthService.login("auth-code"))
                     .willReturn("service-jwt");
 
                 // when & then
