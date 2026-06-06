@@ -2,6 +2,23 @@
 
 ---
 
+## 2026-05-11
+
+### 작업: ADR 템플릿 작성
+- 요청: ADR 양식 초안 생성
+- 결과: `docs/adr/ADR-000-template.md` 생성
+
+### 작업: 프로젝트 전체 분석
+- 요청: 패키지 구조, 각 클래스 역할, 주요 흐름 분석
+- 결과: `docs/ARCHITECTURE.md` 작성 (엔티티 관계도, API 목록, 주문 생성 흐름, 현재 문제점 포함)
+
+### 작업: 패키지 구조 ADR 작성
+- 요청: 도메인 하위 api/view 서브 패키지 분리 결정 문서화
+- 결정: 도메인 패키지 루트 유지, Controller/DTO는 api/ 또는 view/ 하위로 이동
+- 결과: `docs/adr/ADR-001-패키지-구조.md` 작성
+
+---
+
 ## 2026-05-14
 
 ### 작업: repository/ 서브 패키지 이동
@@ -172,20 +189,3 @@
 - 요청: 동시 요청으로 인한 위시리스트 중복 저장 방지
 - 결과: `V4__Add_unique_constraint_to_wish.sql` — `(member_id, product_id)` 복합 유니크 제약
 - 결정: 엔티티 `@UniqueConstraint`는 추가하지 않음 — Flyway 환경에서는 마이그레이션이 진실의 원천
-
----
-
-## 2026-05-11
-
-### 작업: ADR 템플릿 작성
-- 요청: ADR 양식 초안 생성
-- 결과: `docs/adr/ADR-000-template.md` 생성
-
-### 작업: 프로젝트 전체 분석
-- 요청: 패키지 구조, 각 클래스 역할, 주요 흐름 분석
-- 결과: `docs/ARCHITECTURE.md` 작성 (엔티티 관계도, API 목록, 주문 생성 흐름, 현재 문제점 포함)
-
-### 작업: 패키지 구조 ADR 작성
-- 요청: 도메인 하위 api/view 서브 패키지 분리 결정 문서화
-- 결정: 도메인 패키지 루트 유지, Controller/DTO는 api/ 또는 view/ 하위로 이동
-- 결과: `docs/adr/ADR-001-패키지-구조.md` 작성
