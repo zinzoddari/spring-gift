@@ -32,6 +32,6 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
     public ResponseEntity<String> handleOptimisticLock(final RuntimeException e) {
-        return ResponseEntity.status(409).body("잠시 후 다시 시도해 주세요.");
+        return ResponseEntity.status(409).body("현재 다른 요청이 처리 중입니다. 잠시 후 다시 시도해 주세요.");
     }
 }
